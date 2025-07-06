@@ -1,0 +1,310 @@
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+.bc-recipe-calculator {
+  max-width: 1200px;
+  margin: 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  color: #1d2327;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.bc-recipe-calculator .calculator-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #c3c4c7;
+  background: #f6f7f7;
+}
+.bc-recipe-calculator .calculator-header .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.bc-recipe-calculator .calculator-header .header-content .save-actions {
+  flex-shrink: 0;
+}
+.bc-recipe-calculator .calculator-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d2327;
+}
+.bc-recipe-calculator .calculator-header p {
+  margin: 0;
+  color: #646970;
+  font-size: 14px;
+}
+.bc-recipe-calculator .calculator-header .saving-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 13px;
+  font-weight: 500;
+}
+.bc-recipe-calculator .calculator-header .saving-indicator .components-spinner {
+  margin: 0;
+}
+.bc-recipe-calculator .calculator-header .saved-indicator {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 4px;
+  color: #0c5460;
+  font-size: 13px;
+  font-weight: 500;
+}
+.bc-recipe-calculator .calculator-header .saved-indicator .auto-save-note {
+  margin-left: 8px;
+  opacity: 0.7;
+  font-size: 12px;
+}
+.bc-recipe-calculator .calculator-section {
+  padding: 24px;
+  border-bottom: 1px solid #c3c4c7;
+}
+.bc-recipe-calculator .calculator-section:last-child {
+  border-bottom: none;
+}
+.bc-recipe-calculator .calculator-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2327;
+}
+.bc-recipe-calculator .servings-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bc-recipe-calculator .ingredients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.bc-recipe-calculator .ingredients-header .ingredient-actions {
+  display: flex;
+  gap: 8px;
+}
+.bc-recipe-calculator .no-ingredients {
+  text-align: center;
+  padding: 40px 20px;
+  color: #646970;
+  background: #f6f7f7;
+  border-radius: 4px;
+}
+.bc-recipe-calculator .no-ingredients p {
+  margin: 0;
+  font-size: 14px;
+}
+.bc-recipe-calculator .loading-ingredients {
+  text-align: center;
+  padding: 40px 20px;
+  color: #646970;
+  background: #f6f7f7;
+  border-radius: 4px;
+}
+.bc-recipe-calculator .loading-ingredients p {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+.bc-recipe-calculator .ingredient-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: #f6f7f7;
+  border-radius: 4px;
+  border: 1px solid #dcdcde;
+}
+.bc-recipe-calculator .ingredient-row .ingredient-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+.bc-recipe-calculator .ingredient-row .field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bc-recipe-calculator .ingredient-row .field-group.cost-display label {
+  color: #2271b1;
+}
+.bc-recipe-calculator .ingredient-row .field-group.cost-display .cost-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2271b1;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 1px solid #2271b1;
+  border-radius: 2px;
+  text-align: center;
+}
+.bc-recipe-calculator .ingredient-row .remove-ingredient-btn {
+  background: #d63638;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+.bc-recipe-calculator .ingredient-row .remove-ingredient-btn:hover {
+  background: #b32d2e;
+}
+.bc-recipe-calculator .ingredient-row .remove-ingredient-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px #d63638;
+}
+.bc-recipe-calculator .results {
+  background: #f0f6fc;
+  border-left: 4px solid #2271b1;
+}
+.bc-recipe-calculator .results .cost-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.bc-recipe-calculator .results .cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #c3c4c7;
+}
+.bc-recipe-calculator .results .cost-item .cost-label {
+  font-weight: 500;
+  color: #1d2327;
+}
+.bc-recipe-calculator .results .cost-item .cost-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+.bc-recipe-calculator .results .cost-item .cost-value.total {
+  color: #2271b1;
+}
+.bc-recipe-calculator .results .cost-item .cost-value.per-serving {
+  color: #00a32a;
+}
+
+@media (max-width: 768px) {
+  .bc-recipe-calculator .ingredient-row {
+    flex-direction: column;
+  }
+  .bc-recipe-calculator .ingredient-row .ingredient-fields {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .bc-recipe-calculator .ingredient-row .remove-ingredient-btn {
+    align-self: flex-end;
+  }
+  .bc-recipe-calculator .servings-input {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .bc-recipe-calculator .servings-input input {
+    width: 100%;
+    max-width: 200px;
+  }
+  .bc-recipe-calculator .ingredients-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .bc-recipe-calculator .calculator-header .header-content {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .bc-recipe-calculator .calculator-header .header-content .save-actions {
+    width: 100%;
+  }
+  .bc-recipe-calculator .calculator-header .header-content .save-actions .components-button {
+    width: 100%;
+  }
+  .bc-recipe-calculator .results .cost-summary {
+    grid-template-columns: 1fr;
+  }
+}
+.wp-admin .bc-recipe-calculator {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bc-recipe-calculator {
+    background: #1e1e1e;
+    color: #e5e5e5;
+    border-color: #3c434a;
+  }
+  .bc-recipe-calculator .calculator-header {
+    background: #2c3338;
+    border-color: #3c434a;
+  }
+  .bc-recipe-calculator .calculator-section {
+    border-color: #3c434a;
+  }
+  .bc-recipe-calculator .ingredient-row {
+    background: #2c3338;
+    border-color: #3c434a;
+  }
+  .bc-recipe-calculator .no-ingredients {
+    background: #2c3338;
+    color: #a7aaad;
+  }
+  .bc-recipe-calculator .results {
+    background: #1e1e1e;
+  }
+  .bc-recipe-calculator input {
+    background: #1e1e1e;
+    color: #e5e5e5;
+    border-color: #3c434a;
+  }
+  .bc-recipe-calculator input:focus {
+    border-color: #2271b1;
+  }
+}
+.ingredient-modal .components-modal__content {
+  padding: 24px;
+}
+.ingredient-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.ingredient-modal .modal-content .components-text-control__input {
+  width: 100%;
+}
+.ingredient-modal .modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #c3c4c7;
+}
+
+#submitdiv,
+#tagsdiv-bc_ingredient {
+  display: none;
+}
+
+/*# sourceMappingURL=style-index.css.map*/
