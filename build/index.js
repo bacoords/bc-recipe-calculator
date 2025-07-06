@@ -49,10 +49,21 @@ function App() {
   const [isSaving, setIsSaving] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const [lastSaved, setLastSaved] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
 
+  // State for price verification
+  const [priceChanges, setPriceChanges] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [isCheckingPrices, setIsCheckingPrices] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+
   // Fetch ingredients from WordPress taxonomy
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     fetchIngredients();
   }, []);
+
+  // Check for price changes when ingredients are loaded and we have recipe data
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (availableIngredients.length > 0 && ingredients.length > 0) {
+      checkForPriceChanges(ingredients);
+    }
+  }, [availableIngredients, ingredients]);
 
   // Load recipe data on component mount
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
@@ -79,7 +90,17 @@ function App() {
       }
       const data = await response.json();
       setServings(data.meta?.recipe_servings || 1);
-      setIngredients(data.meta?.recipe_ingredients ? JSON.parse(data.meta.recipe_ingredients) : []);
+      const loadedIngredients = data.meta?.recipe_ingredients ? JSON.parse(data.meta.recipe_ingredients) : [];
+      setIngredients(loadedIngredients);
+
+      // Load saved cost values
+      setTotalCost(data.meta?.total_cost || 0);
+      setCostPerServing(data.meta?.cost_per_serving || 0);
+
+      // Check for price changes after loading ingredients
+      if (loadedIngredients.length > 0) {
+        checkForPriceChanges(loadedIngredients);
+      }
     } catch (error) {
       console.error("Error loading recipe data:", error);
       // Don't show error for new recipes that don't have data yet
@@ -87,6 +108,40 @@ function App() {
         setError("Failed to load recipe data");
       }
     }
+  };
+  const checkForPriceChanges = async recipeIngredients => {
+    if (!availableIngredients.length) return;
+    setIsCheckingPrices(true);
+    const changes = [];
+    recipeIngredients.forEach(ingredient => {
+      if (ingredient.termId) {
+        const currentIngredient = availableIngredients.find(ing => ing.id === ingredient.termId);
+        if (currentIngredient) {
+          const currentPrice = parseFloat(currentIngredient.meta?.ingredient_price || 0);
+          const currentQuantity = parseFloat(currentIngredient.meta?.ingredient_quantity || 0);
+
+          // If we have saved price data, compare it
+          if (ingredient.savedPrice !== undefined && ingredient.savedQuantity !== undefined) {
+            const savedPrice = parseFloat(ingredient.savedPrice);
+            const savedQuantity = parseFloat(ingredient.savedQuantity);
+            if (currentPrice !== savedPrice || currentQuantity !== savedQuantity) {
+              changes.push({
+                ingredientId: ingredient.id,
+                name: ingredient.name,
+                oldPrice: savedPrice,
+                newPrice: currentPrice,
+                oldQuantity: savedQuantity,
+                newQuantity: currentQuantity,
+                oldUnitPrice: savedQuantity > 0 ? savedPrice / savedQuantity : 0,
+                newUnitPrice: currentQuantity > 0 ? currentPrice / currentQuantity : 0
+              });
+            }
+          }
+        }
+      }
+    });
+    setPriceChanges(changes);
+    setIsCheckingPrices(false);
   };
   const saveRecipeData = async () => {
     if (!postId) return;
@@ -96,6 +151,21 @@ function App() {
       // Get the title from the WordPress post title field
       const titleElement = document.getElementById("title");
       const title = titleElement ? titleElement.value : "";
+
+      // Save current price data with ingredients
+      const ingredientsWithPriceData = ingredients.map(ingredient => {
+        if (ingredient.termId) {
+          const selectedIngredient = availableIngredients.find(ing => ing.id === ingredient.termId);
+          if (selectedIngredient) {
+            return {
+              ...ingredient,
+              savedPrice: selectedIngredient.meta?.ingredient_price || 0,
+              savedQuantity: selectedIngredient.meta?.ingredient_quantity || 0
+            };
+          }
+        }
+        return ingredient;
+      });
 
       // Update the post with title, status, and meta data
       const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`, {
@@ -109,7 +179,9 @@ function App() {
           status: "publish",
           meta: {
             recipe_servings: servings,
-            recipe_ingredients: JSON.stringify(ingredients)
+            recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
+            total_cost: totalCost,
+            cost_per_serving: costPerServing
           }
         })
       });
@@ -347,6 +419,33 @@ function App() {
         status: "error",
         isDismissible: false,
         children: error
+      }), isCheckingPrices && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+        className: "checking-prices",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Spinner, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+          children: "Checking ingredient prices..."
+        })]
+      }), priceChanges.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Notice, {
+        status: "warning",
+        isDismissible: false,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "price-changes-warning",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h4", {
+            children: "\u26A0\uFE0F Ingredient prices have changed:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ul", {
+            children: priceChanges.map((change, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("strong", {
+                children: change.name
+              }), ": Price changed from $", change.oldPrice.toFixed(2), "for ", change.oldQuantity, " units to $", change.newPrice.toFixed(2), " for ", change.newQuantity, " units.", change.oldUnitPrice !== change.newUnitPrice && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+                className: "unit-price-change",
+                children: [" ", "Unit price: $", change.oldUnitPrice.toFixed(2), " \u2192 $", change.newUnitPrice.toFixed(2)]
+              })]
+            }, index))
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("em", {
+              children: "Cost calculations have been updated with the new prices."
+            })
+          })]
+        })
       }), isLoadingIngredients && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "loading-ingredients",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Spinner, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {

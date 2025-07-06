@@ -42,6 +42,10 @@ class BCRecipeCalculator {
 		add_filter( 'manage_edit-bc_ingredient_columns', array( $this, 'add_ingredient_admin_columns' ) );
 		add_filter( 'manage_bc_ingredient_custom_column', array( $this, 'populate_ingredient_admin_columns' ), 10, 3 );
 
+		// Add hooks for recipe post type admin table columns.
+		add_filter( 'manage_edit-bc_recipe_columns', array( $this, 'add_recipe_admin_columns' ) );
+		add_filter( 'manage_bc_recipe_posts_custom_column', array( $this, 'populate_recipe_admin_columns' ), 10, 2 );
+
 		// Add REST API support for taxonomy meta.
 		add_action( 'rest_api_init', array( $this, 'register_taxonomy_meta_rest_fields' ) );
 
@@ -203,6 +207,30 @@ class BCRecipeCalculator {
 				'sanitize_callback' => array( $this, 'sanitize_recipe_ingredients' ),
 			)
 		);
+
+		register_post_meta(
+			'bc_recipe',
+			'total_cost',
+			array(
+				'show_in_rest'      => true,
+				'single'            => true,
+				'type'              => 'number',
+				'default'           => 0,
+				'sanitize_callback' => array( $this, 'sanitize_cost_field' ),
+			)
+		);
+
+		register_post_meta(
+			'bc_recipe',
+			'cost_per_serving',
+			array(
+				'show_in_rest'      => true,
+				'single'            => true,
+				'type'              => 'number',
+				'default'           => 0,
+				'sanitize_callback' => array( $this, 'sanitize_cost_field' ),
+			)
+		);
 	}
 
 	/**
@@ -219,6 +247,17 @@ class BCRecipeCalculator {
 			}
 		}
 		return '[]';
+	}
+
+	/**
+	 * Sanitize cost fields
+	 *
+	 * @param mixed $value The meta value.
+	 * @return float Sanitized cost value.
+	 */
+	public function sanitize_cost_field( $value ) {
+		$cost = floatval( $value );
+		return max( 0, $cost );
 	}
 
 
@@ -378,6 +417,53 @@ class BCRecipeCalculator {
 
 			default:
 				return $content;
+		}
+	}
+
+	/**
+	 * Add custom columns to the recipe post type admin table
+	 *
+	 * @param array $columns The existing columns.
+	 * @return array Modified columns array.
+	 */
+	public function add_recipe_admin_columns( $columns ) {
+		$new_columns = array();
+
+		// Add our custom columns after the title column.
+		foreach ( $columns as $key => $value ) {
+			$new_columns[ $key ] = $value;
+			if ( 'title' === $key ) {
+				$new_columns['recipe_servings']  = __( 'Servings', 'bc-recipe-calculator' );
+				$new_columns['total_cost']       = __( 'Total Cost', 'bc-recipe-calculator' );
+				$new_columns['cost_per_serving'] = __( 'Cost per Serving', 'bc-recipe-calculator' );
+			}
+		}
+
+		return $new_columns;
+	}
+
+	/**
+	 * Populate the custom columns in the recipe post type admin table
+	 *
+	 * @param string $column_name The column name.
+	 * @param int    $post_id The post ID.
+	 */
+	public function populate_recipe_admin_columns( $column_name, $post_id ) {
+		switch ( $column_name ) {
+			case 'recipe_servings':
+				$servings = get_post_meta( $post_id, 'recipe_servings', true );
+				echo $servings ? esc_html( $servings ) : '—';
+				break;
+
+			case 'total_cost':
+				$total_cost = get_post_meta( $post_id, 'total_cost', true );
+				echo $total_cost ? '$' . number_format( (float) $total_cost, 2 ) : '—';
+				break;
+
+			case 'cost_per_serving':
+				$cost_per_serving = get_post_meta( $post_id, 'cost_per_serving', true );
+				echo $cost_per_serving ? '$' . number_format( (float) $cost_per_serving, 2 ) : '—';
+				break;
 		}
 	}
 
