@@ -7,6 +7,9 @@ import {
   Notice,
   Card,
   CardHeader,
+  Flex,
+  FlexItem,
+  FlexBlock,
   __experimentalGrid as Grid,
   CardBody,
 } from "@wordpress/components";
@@ -333,21 +336,27 @@ function SingleRecipe({ postId: propPostId }) {
     <div className="bc-recipe-calculator">
       <Card>
         <CardBody>
-          <TextControl
-            __next40pxDefaultSize
-            __nextHasNoMarginBottom
-            value={title}
-            onChange={(value) => setTitle(value)}
-            placeholder="Recipe Title"
-          />
-          <Button
-            variant="primary"
-            onClick={saveRecipeData}
-            isBusy={isSaving}
-            disabled={!postId}
-          >
-            {isSaving ? "Saving..." : "Save Recipe"}
-          </Button>
+          <Flex>
+            <FlexBlock>
+              <TextControl
+                __next40pxDefaultSize
+                __nextHasNoMarginBottom
+                value={title}
+                onChange={(value) => setTitle(value)}
+                placeholder="Recipe Title"
+              />
+            </FlexBlock>
+            <FlexItem>
+              <Button
+                variant="primary"
+                onClick={saveRecipeData}
+                isBusy={isSaving}
+                disabled={!postId}
+              >
+                {isSaving ? "Saving..." : "Save Recipe"}
+              </Button>
+            </FlexItem>
+          </Flex>
         </CardBody>
         <CardBody>
           <TextControl

@@ -3,7 +3,7 @@ import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
-import { Icon } from "@wordpress/components";
+import { Icon, Button } from "@wordpress/components";
 import { edit, trash, arrowLeft } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
@@ -228,23 +228,10 @@ function App() {
             gap: "10px",
           }}
         >
-          <button
-            onClick={navigateToList}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              padding: "8px 12px",
-              backgroundColor: "#f0f0f1",
-              border: "1px solid #c3c4c7",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-          >
+          <Button onClick={navigateToList}>
             <Icon icon={arrowLeft} />
             Back to Recipes
-          </button>
+          </Button>
         </div>
         <SingleRecipe postId={editingPostId} />
       </div>
