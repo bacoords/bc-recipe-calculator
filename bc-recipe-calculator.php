@@ -488,7 +488,9 @@ class BCRecipeCalculator {
 	 */
 	public function render_recipes_dashboard_page() {
 		?>
-		<div id="bc-recipe-calculator"></div>
+		<div class="wrap">
+			<div id="bc-recipe-calculator"></div>
+		</div>
 		<?php
 	}
 

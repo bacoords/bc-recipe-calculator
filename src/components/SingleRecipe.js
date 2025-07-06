@@ -334,124 +334,130 @@ function SingleRecipe({ postId: propPostId }) {
 
   return (
     <div className="bc-recipe-calculator">
+      {isSaving && (
+        <Notice status="info" isDismissible={false}>
+          <div className="saving-indicator">
+            <Spinner />
+            <span>Saving...</span>
+          </div>
+        </Notice>
+      )}
+
+      {error && (
+        <Notice status="error" isDismissible={false}>
+          {error}
+        </Notice>
+      )}
+
+      {isCheckingPrices && (
+        <div className="checking-prices">
+          <Spinner />
+          <p>Checking ingredient prices...</p>
+        </div>
+      )}
+
+      <Flex
+        justify="space-between"
+        align="center"
+        style={{ marginBottom: "1rem" }}
+      >
+        <h1>{title}</h1>
+        <Button
+          variant="primary"
+          onClick={saveRecipeData}
+          isBusy={isSaving}
+          disabled={!postId}
+        >
+          {isSaving ? "Saving..." : "Save Recipe"}
+        </Button>
+      </Flex>
       <Card>
         <CardBody>
-          <Flex>
-            <FlexBlock>
+          <div>
+            <Grid
+              templateColumns="75% 25%"
+              align="center"
+              style={{ marginBlock: "1rem" }}
+            >
               <TextControl
                 __next40pxDefaultSize
                 __nextHasNoMarginBottom
+                label="Recipe Title"
                 value={title}
                 onChange={(value) => setTitle(value)}
                 placeholder="Recipe Title"
               />
-            </FlexBlock>
-            <FlexItem>
-              <Button
-                variant="primary"
-                onClick={saveRecipeData}
-                isBusy={isSaving}
-                disabled={!postId}
-              >
-                {isSaving ? "Saving..." : "Save Recipe"}
-              </Button>
-            </FlexItem>
-          </Flex>
-        </CardBody>
-        <CardBody>
-          <TextControl
-            __next40pxDefaultSize
-            __nextHasNoMarginBottom
-            type="number"
-            label="Number of Servings"
-            placeholder="1"
-            value={servings.toString()}
-            onChange={(value) => setServings(parseInt(value) || 1)}
-            min="1"
-          />
-        </CardBody>
-      </Card>
 
-      {isSaving && (
-        <div className="saving-indicator">
-          <Spinner />
-          <span>Saving...</span>
-        </div>
-      )}
+              <TextControl
+                __next40pxDefaultSize
+                __nextHasNoMarginBottom
+                type="number"
+                label="Number of Servings"
+                placeholder="1"
+                value={servings.toString()}
+                onChange={(value) => setServings(parseInt(value) || 1)}
+                min="1"
+              />
+            </Grid>
 
-      <Card>
-        <CardHeader>
-          <h3>Ingredients</h3>
-        </CardHeader>
-        <CardBody>
-          {error && (
-            <Notice status="error" isDismissible={false}>
-              {error}
-            </Notice>
-          )}
+            {priceChanges.length > 0 && (
+              <Notice status="warning" isDismissible={false}>
+                <div className="price-changes-warning">
+                  <h4>⚠️ Ingredient prices have changed:</h4>
+                  <ul>
+                    {priceChanges.map((change, index) => (
+                      <li key={index}>
+                        <strong>{change.name}</strong>: Price changed from $
+                        {change.oldPrice.toFixed(2)}
+                        for {change.oldQuantity} units to $
+                        {change.newPrice.toFixed(2)} for {change.newQuantity}{" "}
+                        units.
+                        {change.oldUnitPrice !== change.newUnitPrice && (
+                          <span className="unit-price-change">
+                            {" "}
+                            Unit price: ${change.oldUnitPrice.toFixed(2)} → $
+                            {change.newUnitPrice.toFixed(2)}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <p>
+                    <em>
+                      Cost calculations have been updated with the new prices.
+                    </em>
+                  </p>
+                </div>
+              </Notice>
+            )}
 
-          {isCheckingPrices && (
-            <div className="checking-prices">
-              <Spinner />
-              <p>Checking ingredient prices...</p>
-            </div>
-          )}
+            {isLoadingIngredients && (
+              <div className="loading-ingredients">
+                <Spinner />
+                <p>Loading ingredients...</p>
+              </div>
+            )}
 
-          {priceChanges.length > 0 && (
-            <Notice status="warning" isDismissible={false}>
-              <div className="price-changes-warning">
-                <h4>⚠️ Ingredient prices have changed:</h4>
-                <ul>
-                  {priceChanges.map((change, index) => (
-                    <li key={index}>
-                      <strong>{change.name}</strong>: Price changed from $
-                      {change.oldPrice.toFixed(2)}
-                      for {change.oldQuantity} units to $
-                      {change.newPrice.toFixed(2)} for {change.newQuantity}{" "}
-                      units.
-                      {change.oldUnitPrice !== change.newUnitPrice && (
-                        <span className="unit-price-change">
-                          {" "}
-                          Unit price: ${change.oldUnitPrice.toFixed(2)} → $
-                          {change.newUnitPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+            {ingredients.length === 0 && !isLoadingIngredients && (
+              <div className="no-ingredients">
                 <p>
-                  <em>
-                    Cost calculations have been updated with the new prices.
-                  </em>
+                  No ingredients added yet. Click "Add Ingredient" to get
+                  started.
                 </p>
               </div>
-            </Notice>
-          )}
-
-          {isLoadingIngredients && (
-            <div className="loading-ingredients">
-              <Spinner />
-              <p>Loading ingredients...</p>
-            </div>
-          )}
-
-          {ingredients.length === 0 && !isLoadingIngredients && (
-            <div className="no-ingredients">
-              <p>
-                No ingredients added yet. Click "Add Ingredient" to get started.
-              </p>
-            </div>
-          )}
-
-          {ingredients.map((ingredient) => (
-            <div key={ingredient.id} className="ingredient-row">
-              <div className="ingredient-fields">
-                <div className="field-group">
-                  <label>Select Ingredient:</label>
+            )}
+            {ingredients.map((ingredient) => (
+              <div
+                key={ingredient.id}
+                className="ingredient-row"
+                style={{ marginBottom: "1rem" }}
+              >
+                <Grid templateColumns="40% 40% 20%" align="center">
                   <SelectControl
                     __next40pxDefaultSize
                     __nextHasNoMarginBottom
                     value={ingredient.termId?.toString() || ""}
+                    label="Select Ingredient:"
                     options={[
                       { label: "Choose an ingredient...", value: "" },
                       ...ingredientOptions,
@@ -460,21 +466,18 @@ function SingleRecipe({ postId: propPostId }) {
                       selectIngredientFromTaxonomy(ingredient.id, value)
                     }
                   />
-                </div>
-
-                <div className="field-group">
-                  <label>
-                    Amount Used in Recipe (
-                    {ingredient.termId
-                      ? availableIngredients.find(
-                          (ing) => ing.id === ingredient.termId
-                        )?.meta?.ingredient_unit || "units"
-                      : "units"}
-                    ):
-                  </label>
                   <TextControl
                     __next40pxDefaultSize
                     __nextHasNoMarginBottom
+                    label={
+                      "Amount Used in Recipe (" +
+                      (ingredient.termId
+                        ? availableIngredients.find(
+                            (ing) => ing.id === ingredient.termId
+                          )?.meta?.ingredient_unit || "units"
+                        : "units") +
+                      ")"
+                    }
                     type="number"
                     step="0.01"
                     value={ingredient.recipeAmount}
@@ -483,41 +486,33 @@ function SingleRecipe({ postId: propPostId }) {
                     }
                     placeholder="0"
                   />
-                </div>
 
-                <div className="field-group cost-display">
-                  <label>Cost:</label>
-                  <span className="cost-value">
-                    ${ingredient.cost.toFixed(2)}
-                  </span>
-                </div>
+                  <div>
+                    <span className="cost-value">
+                      ${ingredient.cost.toFixed(2)}
+                    </span>
+
+                    <Button
+                      isDestructive
+                      onClick={() => removeIngredient(ingredient.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </Grid>
               </div>
+            ))}
 
-              <Button
-                isDestructive
-                onClick={() => removeIngredient(ingredient.id)}
-              >
-                Remove
+            <Flex justify="flex-end" style={{ marginBlock: "1rem" }}>
+              <Button variant="primary" onClick={addIngredient}>
+                + Add Ingredient
               </Button>
-            </div>
-          ))}
-
-          <div className="ingredient-actions">
-            <Button variant="primary" onClick={addIngredient}>
-              + Add Ingredient
-            </Button>
-            <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
-              + Create New Ingredient
-            </Button>
+              <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
+                + Create New Ingredient
+              </Button>
+            </Flex>
           </div>
-        </CardBody>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <h3>Cost Summary</h3>
-        </CardHeader>
-        <CardBody>
           <Grid columns={2}>
             <Card>
               <CardHeader>

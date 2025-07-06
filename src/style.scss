@@ -108,43 +108,6 @@
 		}
 	}
 
-	.ingredient-row {
-		display: flex;
-		gap: 16px;
-		align-items: flex-start;
-		margin-bottom: 1rem;
-
-		.ingredient-fields {
-			flex: 1;
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-			gap: 16px;
-		}
-
-		.field-group {
-			display: flex;
-			flex-direction: column;
-			gap: 4px;
-
-			&.cost-display {
-				label {
-					color: #2271b1;
-				}
-
-				.cost-value {
-					font-size: 16px;
-					font-weight: 600;
-					color: #2271b1;
-					padding: 0.5rem 1rem;
-					background: #fff;
-					border: 1px solid #2271b1;
-					border-radius: 2px;
-					text-align: center;
-				}
-			}
-		}
-	}
-
 	.cost-value {
 		&.total {
 			font-size: 18px;
@@ -160,61 +123,12 @@
 	}
 }
 
-// Responsive Design
-@media (max-width: 768px) {
-	.bc-recipe-calculator {
-		.ingredient-row {
-			flex-direction: column;
-
-			.ingredient-fields {
-				grid-template-columns: 1fr;
-				gap: 12px;
-			}
-		}
-
-		.ingredient-actions {
-			flex-direction: column;
-			align-items: stretch;
-		}
-	}
-}
-
-// WordPress Admin Integration
-.wp-admin {
-	.bc-recipe-calculator {
+#wpwrap {
+	background-color: #fff;
+	.wrap {
 		margin: 0;
-		border: none;
-		box-shadow: none;
 	}
-}
-
-// Modal Styles
-.ingredient-modal {
-	.components-modal__content {
-		padding: 24px;
+	#wpcontent {
+		padding: 0;
 	}
-
-	.modal-content {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-		margin-bottom: 24px;
-
-		.components-text-control__input {
-			width: 100%;
-		}
-	}
-
-	.modal-actions {
-		display: flex;
-		gap: 8px;
-		justify-content: flex-end;
-		padding-top: 16px;
-		border-top: 1px solid #c3c4c7;
-	}
-}
-
-#submitdiv,
-#tagsdiv-bc_ingredient {
-	display: none;
 }

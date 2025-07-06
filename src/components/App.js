@@ -3,10 +3,11 @@ import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
-import { Icon, Button } from "@wordpress/components";
+import { Icon, Button, Spinner } from "@wordpress/components";
 import { edit, trash, arrowLeft } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
+import Header from "./Header";
 
 function App() {
   const [view, setView] = useState({
@@ -219,27 +220,26 @@ function App() {
   // If we're editing a specific recipe, show the SingleRecipe component
   if (editingPostId) {
     return (
-      <div style={{ padding: "20px" }}>
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
+      <div>
+        <Header>
           <Button onClick={navigateToList}>
             <Icon icon={arrowLeft} />
             Back to Recipes
           </Button>
+        </Header>
+        <div style={{ padding: "1rem" }}>
+          <SingleRecipe postId={editingPostId} />
         </div>
-        <SingleRecipe postId={editingPostId} />
       </div>
     );
   }
 
   if (!hasResolved) {
-    return <div>Loading recipes...</div>;
+    return (
+      <div style={{ padding: "1rem", textAlign: "center" }}>
+        <Spinner />
+      </div>
+    );
   }
 
   // Debug: Log the first record to see the data structure
@@ -250,31 +250,25 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1 style={{ margin: 0 }}>Recipe Management</h1>
+    <div>
+      <Header>
         <CreateRecipeModal onRecipeCreated={handleRecipeCreated} />
+      </Header>
+      <div style={{ padding: "1rem" }}>
+        <DataViews
+          data={records || []}
+          fields={fields}
+          view={view}
+          onChangeView={setView}
+          actions={actions}
+          paginationInfo={{
+            totalItems: records?.length || 0,
+            totalPages: Math.ceil((records?.length || 0) / view.perPage),
+          }}
+          search={true}
+          searchLabel="Search recipes..."
+        />
       </div>
-      <DataViews
-        data={records || []}
-        fields={fields}
-        view={view}
-        onChangeView={setView}
-        actions={actions}
-        paginationInfo={{
-          totalItems: records?.length || 0,
-          totalPages: Math.ceil((records?.length || 0) / view.perPage),
-        }}
-        search={true}
-        searchLabel="Search recipes..."
-      />
     </div>
   );
 }
