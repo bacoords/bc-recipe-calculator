@@ -1,5 +1,11 @@
 import { useState } from "@wordpress/element";
-import { Button, TextControl, Modal, Notice } from "@wordpress/components";
+import {
+  Button,
+  TextControl,
+  Modal,
+  Notice,
+  Flex,
+} from "@wordpress/components";
 
 function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
   const [newIngredient, setNewIngredient] = useState({
@@ -122,83 +128,83 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
               {error}
             </Notice>
           )}
+          <Flex gap="1rem" direction="column">
+            <TextControl
+              label="Ingredient Name *"
+              __nextHasNoMarginBottom
+              value={newIngredient.name}
+              onChange={(value) =>
+                setNewIngredient({ ...newIngredient, name: value })
+              }
+              placeholder="e.g., All-purpose flour"
+              required
+            />
 
-          <TextControl
-            label="Ingredient Name *"
-            __nextHasNoMarginBottom
-            value={newIngredient.name}
-            onChange={(value) =>
-              setNewIngredient({ ...newIngredient, name: value })
-            }
-            placeholder="e.g., All-purpose flour"
-            required
-          />
+            <TextControl
+              label="Price per Unit ($) *"
+              __nextHasNoMarginBottom
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={newIngredient.price}
+              onChange={(value) =>
+                setNewIngredient({ ...newIngredient, price: value })
+              }
+              placeholder="0.00"
+              required
+            />
 
-          <TextControl
-            label="Price per Unit ($) *"
-            __nextHasNoMarginBottom
-            type="number"
-            step="0.01"
-            min="0.01"
-            value={newIngredient.price}
-            onChange={(value) =>
-              setNewIngredient({ ...newIngredient, price: value })
-            }
-            placeholder="0.00"
-            required
-          />
+            <TextControl
+              label="Default Quantity *"
+              __nextHasNoMarginBottom
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={newIngredient.quantity}
+              onChange={(value) =>
+                setNewIngredient({ ...newIngredient, quantity: value })
+              }
+              placeholder="0"
+              required
+            />
 
-          <TextControl
-            label="Default Quantity *"
-            __nextHasNoMarginBottom
-            type="number"
-            step="0.01"
-            min="0.01"
-            value={newIngredient.quantity}
-            onChange={(value) =>
-              setNewIngredient({ ...newIngredient, quantity: value })
-            }
-            placeholder="0"
-            required
-          />
-
-          <TextControl
-            label="Unit *"
-            __nextHasNoMarginBottom
-            value={newIngredient.unit}
-            onChange={(value) =>
-              setNewIngredient({ ...newIngredient, unit: value })
-            }
-            placeholder="e.g., grams, cups, oz"
-            required
-          />
-        </div>
-
-        <div className="modal-actions">
-          <Button
-            variant="primary"
-            onClick={createNewIngredient}
-            isBusy={isCreatingIngredient}
-            disabled={
-              !newIngredient.name.trim() ||
-              !newIngredient.price.trim() ||
-              !newIngredient.quantity.trim() ||
-              !newIngredient.unit.trim() ||
-              isNaN(parseFloat(newIngredient.price)) ||
-              parseFloat(newIngredient.price) <= 0 ||
-              isNaN(parseFloat(newIngredient.quantity)) ||
-              parseFloat(newIngredient.quantity) <= 0
-            }
-          >
-            {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isCreatingIngredient}
-          >
-            Cancel
-          </Button>
+            <TextControl
+              label="Unit *"
+              __nextHasNoMarginBottom
+              value={newIngredient.unit}
+              onChange={(value) =>
+                setNewIngredient({ ...newIngredient, unit: value })
+              }
+              placeholder="e.g., grams, cups, oz"
+              required
+            />
+            <Flex justify="flex-end" gap="1rem">
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                disabled={isCreatingIngredient}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={createNewIngredient}
+                isBusy={isCreatingIngredient}
+                disabled={
+                  !newIngredient.name.trim() ||
+                  !newIngredient.price.trim() ||
+                  !newIngredient.quantity.trim() ||
+                  !newIngredient.unit.trim() ||
+                  isNaN(parseFloat(newIngredient.price)) ||
+                  parseFloat(newIngredient.price) <= 0 ||
+                  isNaN(parseFloat(newIngredient.quantity)) ||
+                  parseFloat(newIngredient.quantity) <= 0
+                }
+              >
+                {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
+              </Button>
+            </Flex>
+          </Flex>
         </div>
       </Modal>
     )
