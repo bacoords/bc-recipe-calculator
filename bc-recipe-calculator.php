@@ -509,6 +509,7 @@ class BCRecipeCalculator {
 				// Enqueue the styles for the core components library.
 				wp_enqueue_style( 'global' );
 				wp_enqueue_style( 'wp-edit-post' );
+				wp_enqueue_style( 'wp-components' );
 
 				$asset_data = require $asset_file;
 				wp_enqueue_script(

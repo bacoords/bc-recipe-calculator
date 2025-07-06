@@ -3,7 +3,7 @@ import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
-import { Icon, Button, Spinner, Modal, Flex } from "@wordpress/components";
+import { Icon, Button, Spinner, Flex } from "@wordpress/components";
 import { edit, trash, arrowLeft } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
@@ -233,6 +233,7 @@ function App() {
       </Header>
       <div style={{ padding: "1rem" }}>
         <DataViews
+          type="table"
           data={records || []}
           fields={fields}
           view={view}
