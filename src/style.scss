@@ -1,112 +1,85 @@
 // WordPress Admin Theme Integration
 .bc-recipe-calculator {
-	max-width: 1200px;
-	margin: 20px 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue",
-		sans-serif;
-	color: #1d2327;
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	> * + * {
+		margin-top: 1rem;
+	}
 
-	.calculator-header {
-		padding: 20px 24px;
-		border-bottom: 1px solid #c3c4c7;
+	.saving-indicator {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 12px;
+		padding: 8px 12px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+
+		.components-spinner {
+			margin: 0;
+		}
+	}
+
+	.saved-indicator {
+		margin-top: 12px;
+		padding: 8px 12px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+
+		.auto-save-note {
+			margin-left: 8px;
+			opacity: 0.7;
+			font-size: 12px;
+		}
+	}
+
+	.checking-prices {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 12px;
+		padding: 8px 12px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #646970;
 		background: #f6f7f7;
+	}
 
-		.header-content {
-			display: flex;
-			justify-content: space-between;
-			align-items: flex-start;
-			gap: 20px;
-
-			.save-actions {
-				flex-shrink: 0;
-			}
+	.price-changes-warning {
+		h4 {
+			margin: 0 0 8px 0;
+			font-size: 14px;
+			font-weight: 600;
 		}
 
-		h2 {
-			margin: 0 0 8px 0;
-			font-size: 18px;
-			font-weight: 600;
-			color: #1d2327;
+		ul {
+			margin: 8px 0;
+			padding-left: 20px;
+		}
+
+		li {
+			margin-bottom: 4px;
+			font-size: 13px;
+		}
+
+		.unit-price-change {
+			color: #d63638;
+			font-weight: 500;
 		}
 
 		p {
-			margin: 0;
-			color: #646970;
-			font-size: 14px;
-		}
-
-		.saving-indicator {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-top: 12px;
-			padding: 8px 12px;
-			background: #fff3cd;
-			border: 1px solid #ffeaa7;
-			border-radius: 4px;
-			color: #856404;
-			font-size: 13px;
-			font-weight: 500;
-
-			.components-spinner {
-				margin: 0;
-			}
-		}
-
-		.saved-indicator {
-			margin-top: 12px;
-			padding: 8px 12px;
-			background: #d1ecf1;
-			border: 1px solid #bee5eb;
-			border-radius: 4px;
-			color: #0c5460;
-			font-size: 13px;
-			font-weight: 500;
-
-			.auto-save-note {
-				margin-left: 8px;
-				opacity: 0.7;
-				font-size: 12px;
-			}
+			margin: 8px 0 0 0;
+			font-size: 12px;
+			font-style: italic;
 		}
 	}
 
-	.calculator-section {
-		padding: 24px;
-		border-bottom: 1px solid #c3c4c7;
-
-		&:last-child {
-			border-bottom: none;
-		}
-
-		h3 {
-			margin: 0 0 16px 0;
-			font-size: 16px;
-			font-weight: 600;
-			color: #1d2327;
-		}
-	}
-
-	.servings-input {
+	.ingredient-actions {
 		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.ingredients-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20px;
-
-		.ingredient-actions {
-			display: flex;
-			gap: 8px;
-		}
+		flex-direction: row;
+		justify-content: flex-end;
+		gap: 8px;
 	}
 
 	.no-ingredients {
@@ -170,66 +143,19 @@
 				}
 			}
 		}
-
-		.remove-ingredient-btn {
-			background: #d63638;
-			color: #fff;
-			border: none;
-			padding: 8px 12px;
-			border-radius: 4px;
-			font-size: 12px;
-			font-weight: 500;
-			cursor: pointer;
-			transition: background-color 0.2s;
-			white-space: nowrap;
-
-			&:hover {
-				background: #b32d2e;
-			}
-
-			&:focus {
-				outline: none;
-				box-shadow: 0 0 0 1px #d63638;
-			}
-		}
 	}
 
-	.results {
-		background: #f0f6fc;
-		border-left: 4px solid #2271b1;
-
-		.cost-summary {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-			gap: 20px;
+	.cost-value {
+		&.total {
+			font-size: 18px;
+			font-weight: 700;
+			color: #2271b1;
 		}
 
-		.cost-item {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 16px;
-			background: #fff;
-			border-radius: 4px;
-			border: 1px solid #c3c4c7;
-
-			.cost-label {
-				font-weight: 500;
-				color: #1d2327;
-			}
-
-			.cost-value {
-				font-size: 18px;
-				font-weight: 600;
-
-				&.total {
-					color: #2271b1;
-				}
-
-				&.per-serving {
-					color: #00a32a;
-				}
-			}
+		&.per-serving {
+			font-size: 18px;
+			font-weight: 700;
+			color: #2271b1;
 		}
 	}
 }
@@ -244,47 +170,11 @@
 				grid-template-columns: 1fr;
 				gap: 12px;
 			}
-
-			.remove-ingredient-btn {
-				align-self: flex-end;
-			}
 		}
 
-		.servings-input {
+		.ingredient-actions {
 			flex-direction: column;
-			align-items: flex-start;
-			gap: 8px;
-
-			input {
-				width: 100%;
-				max-width: 200px;
-			}
-		}
-
-		.ingredients-header {
-			flex-direction: column;
-			gap: 16px;
-			align-items: flex-start;
-		}
-
-		.calculator-header {
-			.header-content {
-				flex-direction: column;
-				gap: 16px;
-				align-items: flex-start;
-
-				.save-actions {
-					width: 100%;
-
-					.components-button {
-						width: 100%;
-					}
-				}
-			}
-		}
-
-		.results .cost-summary {
-			grid-template-columns: 1fr;
+			align-items: stretch;
 		}
 	}
 }
@@ -295,48 +185,6 @@
 		margin: 0;
 		border: none;
 		box-shadow: none;
-	}
-}
-
-// Dark Mode Support (if WordPress has dark mode)
-@media (prefers-color-scheme: dark) {
-	.bc-recipe-calculator {
-		background: #1e1e1e;
-		color: #e5e5e5;
-		border-color: #3c434a;
-
-		.calculator-header {
-			background: #2c3338;
-			border-color: #3c434a;
-		}
-
-		.calculator-section {
-			border-color: #3c434a;
-		}
-
-		.ingredient-row {
-			background: #2c3338;
-			border-color: #3c434a;
-		}
-
-		.no-ingredients {
-			background: #2c3338;
-			color: #a7aaad;
-		}
-
-		.results {
-			background: #1e1e1e;
-		}
-
-		input {
-			background: #1e1e1e;
-			color: #e5e5e5;
-			border-color: #3c434a;
-
-			&:focus {
-				border-color: #2271b1;
-			}
-		}
 	}
 }
 

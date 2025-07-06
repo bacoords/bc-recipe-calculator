@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@wordpress/dataviews": "^4.22.0",
+    "@wordpress/icons": "^10.1.0"
   },
   "devDependencies": {
     "@wordpress/scripts": "^30.19.0"

@@ -1,704 +1,257 @@
-import { useState, useEffect } from "@wordpress/element";
-import {
-  Button,
-  TextControl,
-  Modal,
-  SelectControl,
-  Spinner,
-  Notice,
-} from "@wordpress/components";
-import { __ } from "@wordpress/i18n";
+import { useState, useMemo, useEffect } from "react";
+import { DataViews } from "@wordpress/dataviews/wp";
+import { useEntityRecords } from "@wordpress/core-data";
+import { Icon } from "@wordpress/components";
+import { edit, external, trash, arrowLeft } from "@wordpress/icons";
+import SingleRecipe from "./SingleRecipe";
 
 function App() {
-  // Get the current post ID from the WordPress environment
-  const postId = window.bcRecipeCalculator?.postId || 0;
-
-  const [servings, setServings] = useState(1);
-  const [ingredients, setIngredients] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
-  const [costPerServing, setCostPerServing] = useState(0);
-
-  // New state for taxonomy integration
-  const [availableIngredients, setAvailableIngredients] = useState([]);
-  const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newIngredient, setNewIngredient] = useState({
-    name: "",
-    price: "",
-    quantity: "",
-    unit: "",
+  const [view, setView] = useState({
+    type: "table",
+    perPage: 10,
+    page: 1,
+    sort: {
+      field: "title",
+      direction: "asc",
+    },
+    search: "",
+    filters: [],
+    titleField: "title",
+    fields: ["total_cost", "cost_per_serving"],
   });
-  const [isCreatingIngredient, setIsCreatingIngredient] = useState(false);
-  const [error, setError] = useState("");
 
-  // State for saving data
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
+  // Get the post ID from URL parameters
+  const [editingPostId, setEditingPostId] = useState(null);
 
-  // State for price verification
-  const [priceChanges, setPriceChanges] = useState([]);
-  const [isCheckingPrices, setIsCheckingPrices] = useState(false);
-
-  // Fetch ingredients from WordPress taxonomy
   useEffect(() => {
-    fetchIngredients();
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get("edit");
+    setEditingPostId(postId ? parseInt(postId) : null);
   }, []);
 
-  // Check for price changes when ingredients are loaded and we have recipe data
-  useEffect(() => {
-    if (availableIngredients.length > 0 && ingredients.length > 0) {
-      checkForPriceChanges(ingredients);
-    }
-  }, [availableIngredients, ingredients]);
-
-  // Load recipe data on component mount
-  useEffect(() => {
-    if (postId) {
-      loadRecipeData();
-    }
-  }, [postId]);
-
-  // Auto-save recipe data every 1 minute
-  useEffect(() => {
-    if (postId && (servings > 0 || ingredients.length > 0)) {
-      const intervalId = setInterval(() => {
-        saveRecipeData();
-      }, 60000); // Auto-save every 1 minute
-
-      return () => clearInterval(intervalId);
-    }
-  }, [servings, ingredients, postId]);
-
-  const loadRecipeData = async () => {
-    try {
-      const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`);
-      if (!response.ok) {
-        throw new Error("Failed to load recipe data");
-      }
-      const data = await response.json();
-      setServings(data.meta?.recipe_servings || 1);
-      const loadedIngredients = data.meta?.recipe_ingredients
-        ? JSON.parse(data.meta.recipe_ingredients)
-        : [];
-      setIngredients(loadedIngredients);
-
-      // Load saved cost values
-      setTotalCost(data.meta?.total_cost || 0);
-      setCostPerServing(data.meta?.cost_per_serving || 0);
-
-      // Check for price changes after loading ingredients
-      if (loadedIngredients.length > 0) {
-        checkForPriceChanges(loadedIngredients);
-      }
-    } catch (error) {
-      console.error("Error loading recipe data:", error);
-      // Don't show error for new recipes that don't have data yet
-      if (error.message !== "Failed to load recipe data") {
-        setError("Failed to load recipe data");
-      }
-    }
+  const navigateToEdit = (postId) => {
+    const url = new URL(window.location);
+    url.searchParams.set("edit", postId);
+    window.history.pushState({}, "", url);
+    setEditingPostId(postId);
   };
 
-  const checkForPriceChanges = async (recipeIngredients) => {
-    if (!availableIngredients.length) return;
+  const navigateToList = () => {
+    const url = new URL(window.location);
+    url.searchParams.delete("edit");
+    window.history.pushState({}, "", url);
+    setEditingPostId(null);
+  };
 
-    setIsCheckingPrices(true);
-    const changes = [];
+  // Listen for browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get("edit");
+      setEditingPostId(postId ? parseInt(postId) : null);
+    };
 
-    recipeIngredients.forEach((ingredient) => {
-      if (ingredient.termId) {
-        const currentIngredient = availableIngredients.find(
-          (ing) => ing.id === ingredient.termId
-        );
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
-        if (currentIngredient) {
-          const currentPrice = parseFloat(
-            currentIngredient.meta?.ingredient_price || 0
-          );
-          const currentQuantity = parseFloat(
-            currentIngredient.meta?.ingredient_quantity || 0
-          );
-
-          // If we have saved price data, compare it
-          if (
-            ingredient.savedPrice !== undefined &&
-            ingredient.savedQuantity !== undefined
-          ) {
-            const savedPrice = parseFloat(ingredient.savedPrice);
-            const savedQuantity = parseFloat(ingredient.savedQuantity);
-
-            if (
-              currentPrice !== savedPrice ||
-              currentQuantity !== savedQuantity
-            ) {
-              changes.push({
-                ingredientId: ingredient.id,
-                name: ingredient.name,
-                oldPrice: savedPrice,
-                newPrice: currentPrice,
-                oldQuantity: savedQuantity,
-                newQuantity: currentQuantity,
-                oldUnitPrice:
-                  savedQuantity > 0 ? savedPrice / savedQuantity : 0,
-                newUnitPrice:
-                  currentQuantity > 0 ? currentPrice / currentQuantity : 0,
-              });
-            }
-          }
-        }
+  const queryArgs = useMemo(() => {
+    const filters = {};
+    view.filters.forEach((filter) => {
+      if (filter.field === "author" && filter.operator === "is") {
+        filters.author = filter.value;
       }
     });
-
-    setPriceChanges(changes);
-    setIsCheckingPrices(false);
-  };
-
-  const saveRecipeData = async () => {
-    if (!postId) return;
-
-    try {
-      setIsSaving(true);
-
-      // Get the title from the WordPress post title field
-      const titleElement = document.getElementById("title");
-      const title = titleElement ? titleElement.value : "";
-
-      // Save current price data with ingredients
-      const ingredientsWithPriceData = ingredients.map((ingredient) => {
-        if (ingredient.termId) {
-          const selectedIngredient = availableIngredients.find(
-            (ing) => ing.id === ingredient.termId
-          );
-          if (selectedIngredient) {
-            return {
-              ...ingredient,
-              savedPrice: selectedIngredient.meta?.ingredient_price || 0,
-              savedQuantity: selectedIngredient.meta?.ingredient_quantity || 0,
-            };
-          }
-        }
-        return ingredient;
-      });
-
-      // Get the term IDs of selected ingredients for taxonomy assignment
-      const ingredientTermIds = ingredients
-        .filter((ingredient) => ingredient.termId)
-        .map((ingredient) => ingredient.termId);
-
-      // Update the post with title, status, meta data, and taxonomy terms
-      const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-WP-Nonce": wpApiSettings.nonce,
-        },
-        body: JSON.stringify({
-          title: title,
-          status: "publish",
-          meta: {
-            recipe_servings: servings,
-            recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
-            total_cost: totalCost,
-            cost_per_serving: costPerServing,
-          },
-          bc_ingredient: ingredientTermIds,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save recipe data");
-      }
-
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error("Error saving recipe data:", error);
-      setError("Failed to save recipe data");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const fetchIngredients = async () => {
-    try {
-      setIsLoadingIngredients(true);
-      const response = await fetch("/wp-json/wp/v2/bc_ingredient?per_page=100");
-      if (!response.ok) {
-        throw new Error("Failed to fetch ingredients");
-      }
-      const ingredients = await response.json();
-      setAvailableIngredients(ingredients);
-    } catch (error) {
-      console.error("Error fetching ingredients:", error);
-      setError("Failed to load ingredients");
-    } finally {
-      setIsLoadingIngredients(false);
-    }
-  };
-
-  const createNewIngredient = async () => {
-    if (!newIngredient.name.trim()) {
-      setError("Ingredient name is required");
-      return;
-    }
-
-    if (!newIngredient.price.trim()) {
-      setError("Price is required");
-      return;
-    }
-
-    if (
-      isNaN(parseFloat(newIngredient.price)) ||
-      parseFloat(newIngredient.price) <= 0
-    ) {
-      setError("Price must be a valid positive number");
-      return;
-    }
-
-    if (!newIngredient.quantity.trim()) {
-      setError("Quantity is required");
-      return;
-    }
-
-    if (
-      isNaN(parseFloat(newIngredient.quantity)) ||
-      parseFloat(newIngredient.quantity) <= 0
-    ) {
-      setError("Quantity must be a valid positive number");
-      return;
-    }
-
-    if (!newIngredient.unit.trim()) {
-      setError("Unit is required");
-      return;
-    }
-
-    try {
-      setIsCreatingIngredient(true);
-      setError("");
-
-      const response = await fetch("/wp-json/wp/v2/bc_ingredient", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-WP-Nonce": wpApiSettings.nonce,
-        },
-        body: JSON.stringify({
-          name: newIngredient.name,
-          meta: {
-            ingredient_price: newIngredient.price,
-            ingredient_quantity: newIngredient.quantity,
-            ingredient_unit: newIngredient.unit,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create ingredient");
-      }
-
-      const createdIngredient = await response.json();
-      setAvailableIngredients([...availableIngredients, createdIngredient]);
-      setIsModalOpen(false);
-      setNewIngredient({ name: "", price: "", quantity: "", unit: "" });
-
-      // Refresh the ingredients list
-      await fetchIngredients();
-    } catch (error) {
-      console.error("Error creating ingredient:", error);
-      setError("Failed to create ingredient");
-    } finally {
-      setIsCreatingIngredient(false);
-    }
-  };
-
-  const addIngredient = () => {
-    const newIngredient = {
-      id: Date.now(),
-      termId: null,
-      name: "",
-      recipeAmount: "",
-      cost: 0,
+    return {
+      per_page: view.perPage,
+      page: view.page,
+      _embed: "author",
+      order: view.sort?.direction,
+      orderby: view.sort?.field,
+      search: view.search,
+      ...filters,
     };
-    setIngredients([...ingredients, newIngredient]);
-  };
+  }, [view]);
 
-  const removeIngredient = (id) => {
-    setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
-  };
+  const { hasResolved, records } = useEntityRecords(
+    "postType",
+    "bc_recipe",
+    queryArgs
+  );
 
-  const updateIngredient = (id, field, value) => {
-    setIngredients(
-      ingredients.map((ingredient) => {
-        if (ingredient.id === id) {
-          const updated = { ...ingredient, [field]: value };
-
-          // Calculate cost for this ingredient using taxonomy data
-          if (updated.termId && updated.recipeAmount) {
-            const selectedIngredient = availableIngredients.find(
-              (ing) => ing.id === updated.termId
-            );
-            if (selectedIngredient) {
-              const price = parseFloat(
-                selectedIngredient.meta?.ingredient_price || 0
-              );
-              const packageAmount = parseFloat(
-                selectedIngredient.meta?.ingredient_quantity || 0
-              );
-              const recipeAmount = parseFloat(updated.recipeAmount);
-
-              if (packageAmount > 0) {
-                updated.cost = (price / packageAmount) * recipeAmount;
-              } else {
-                updated.cost = 0;
-              }
-            }
-          }
-
-          return updated;
-        }
-        return ingredient;
-      })
-    );
-  };
-
-  const selectIngredientFromTaxonomy = (id, termId) => {
-    const selectedIngredient = availableIngredients.find(
-      (ing) => ing.id === parseInt(termId)
-    );
-    if (selectedIngredient) {
-      setIngredients(
-        ingredients.map((ingredient) => {
-          if (ingredient.id === id) {
-            const updated = {
-              ...ingredient,
-              termId: selectedIngredient.id,
-              name: selectedIngredient.name,
-            };
-
-            // Calculate cost for this ingredient using taxonomy data
-            if (updated.termId && updated.recipeAmount) {
-              const price = parseFloat(
-                selectedIngredient.meta?.ingredient_price || 0
-              );
-              const packageAmount = parseFloat(
-                selectedIngredient.meta?.ingredient_quantity || 0
-              );
-              const recipeAmount = parseFloat(updated.recipeAmount);
-
-              if (packageAmount > 0) {
-                updated.cost = (price / packageAmount) * recipeAmount;
-              } else {
-                updated.cost = 0;
-              }
-            } else {
-              updated.cost = 0;
-            }
-
-            return updated;
-          }
-          return ingredient;
-        })
-      );
-    }
-  };
-
-  // Calculate total cost whenever ingredients change
-  useEffect(() => {
-    const total = ingredients.reduce(
-      (sum, ingredient) => sum + ingredient.cost,
-      0
-    );
-    setTotalCost(total);
-    setCostPerServing(servings > 0 ? total / servings : 0);
-  }, [ingredients, servings]);
-
-  const ingredientOptions = availableIngredients.map((ingredient) => ({
-    label: ingredient.name,
-    value: ingredient.id.toString(),
-  }));
-
-  return (
-    <div className="bc-recipe-calculator">
-      <div className="calculator-header">
-        <div className="header-content">
-          <div>
-            <h2>Recipe Cost Calculator</h2>
-            <p>Calculate the cost of your recipe ingredients</p>
-          </div>
-          <div className="save-actions">
-            <Button
-              variant="primary"
-              onClick={saveRecipeData}
-              isBusy={isSaving}
-              disabled={!postId}
-            >
-              {isSaving ? "Saving..." : "Save Recipe"}
-            </Button>
-          </div>
-        </div>
-        {isSaving && (
-          <div className="saving-indicator">
-            <Spinner />
-            <span>Saving...</span>
-          </div>
-        )}
-        {lastSaved && !isSaving && (
-          <div className="saved-indicator">
-            <span>✓ Last saved: {lastSaved.toLocaleTimeString()}</span>
-            <span className="auto-save-note">(Auto-saves every minute)</span>
-          </div>
-        )}
-      </div>
-
-      <div className="calculator-section">
-        <div className="servings-input">
-          <label htmlFor="servings">Number of Servings:</label>
-          <TextControl
-            type="number"
-            value={servings.toString()}
-            onChange={(value) => setServings(parseInt(value) || 1)}
-            min="1"
-          />
-        </div>
-      </div>
-
-      <div className="calculator-section">
-        <div className="ingredients-header">
-          <h3>Ingredients</h3>
-        </div>
-
-        {error && (
-          <Notice status="error" isDismissible={false}>
-            {error}
-          </Notice>
-        )}
-
-        {isCheckingPrices && (
-          <div className="checking-prices">
-            <Spinner />
-            <p>Checking ingredient prices...</p>
-          </div>
-        )}
-
-        {priceChanges.length > 0 && (
-          <Notice status="warning" isDismissible={false}>
-            <div className="price-changes-warning">
-              <h4>⚠️ Ingredient prices have changed:</h4>
-              <ul>
-                {priceChanges.map((change, index) => (
-                  <li key={index}>
-                    <strong>{change.name}</strong>: Price changed from $
-                    {change.oldPrice.toFixed(2)}
-                    for {change.oldQuantity} units to $
-                    {change.newPrice.toFixed(2)} for {change.newQuantity} units.
-                    {change.oldUnitPrice !== change.newUnitPrice && (
-                      <span className="unit-price-change">
-                        {" "}
-                        Unit price: ${change.oldUnitPrice.toFixed(2)} → $
-                        {change.newUnitPrice.toFixed(2)}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <p>
-                <em>
-                  Cost calculations have been updated with the new prices.
-                </em>
-              </p>
-            </div>
-          </Notice>
-        )}
-
-        {isLoadingIngredients && (
-          <div className="loading-ingredients">
-            <Spinner />
-            <p>Loading ingredients...</p>
-          </div>
-        )}
-
-        {ingredients.length === 0 && !isLoadingIngredients && (
-          <div className="no-ingredients">
-            <p>
-              No ingredients added yet. Click "Add Ingredient" to get started.
-            </p>
-          </div>
-        )}
-
-        {ingredients.map((ingredient) => (
-          <div key={ingredient.id} className="ingredient-row">
-            <div className="ingredient-fields">
-              <div className="field-group">
-                <label>Select Ingredient:</label>
-                <SelectControl
-                  value={ingredient.termId?.toString() || ""}
-                  options={[
-                    { label: "Choose an ingredient...", value: "" },
-                    ...ingredientOptions,
-                  ]}
-                  onChange={(value) =>
-                    selectIngredientFromTaxonomy(ingredient.id, value)
-                  }
-                />
-              </div>
-
-              <div className="field-group">
-                <label>
-                  Amount Used in Recipe (
-                  {ingredient.termId
-                    ? availableIngredients.find(
-                        (ing) => ing.id === ingredient.termId
-                      )?.meta?.ingredient_unit || "units"
-                    : "units"}
-                  ):
-                </label>
-                <TextControl
-                  type="number"
-                  step="0.01"
-                  value={ingredient.recipeAmount}
-                  onChange={(value) =>
-                    updateIngredient(ingredient.id, "recipeAmount", value)
-                  }
-                  placeholder="0"
-                />
-              </div>
-
-              <div className="field-group cost-display">
-                <label>Cost:</label>
-                <span className="cost-value">
-                  ${ingredient.cost.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <Button
-              isDestructive
-              onClick={() => removeIngredient(ingredient.id)}
-            >
-              Remove
-            </Button>
-          </div>
-        ))}
-
-        <div className="ingredient-actions">
-          <Button variant="primary" onClick={addIngredient}>
-            + Add Ingredient
-          </Button>
-          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
-            + Create New Ingredient
-          </Button>
-        </div>
-      </div>
-
-      <div className="calculator-section results">
-        <h3>Cost Summary</h3>
-        <div className="cost-summary">
-          <div className="cost-item">
-            <span className="cost-label">Total Recipe Cost:</span>
-            <span className="cost-value total">${totalCost.toFixed(2)}</span>
-          </div>
-          <div className="cost-item">
-            <span className="cost-label">Cost per Serving:</span>
-            <span className="cost-value per-serving">
-              ${costPerServing.toFixed(2)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {isModalOpen && (
-        <Modal
-          title="Create New Ingredient"
-          onRequestClose={() => setIsModalOpen(false)}
-          className="ingredient-modal"
+  const fields = [
+    {
+      id: "title",
+      type: "text",
+      label: "Title",
+      header: "Recipe Title",
+      enableHiding: false,
+      getValue: (item) => item.title?.rendered || item.title?.raw || "",
+      render: ({ item }) => (
+        <button
+          style={{
+            background: "none",
+            border: "none",
+            color: "#0073aa",
+            textDecoration: "underline",
+            cursor: "pointer",
+            padding: 0,
+            font: "inherit",
+          }}
+          onClick={() => navigateToEdit(item.id)}
         >
-          <div className="modal-content">
-            <p
+          {item.title?.rendered || item.title?.raw || ""}
+        </button>
+      ),
+      sort: (a, b) => {
+        const titleA = a.title?.rendered || a.title?.raw || "";
+        const titleB = b.title?.rendered || b.title?.raw || "";
+        return titleA.localeCompare(titleB);
+      },
+    },
+    {
+      id: "total_cost",
+      type: "number",
+      label: "Total Cost",
+      header: "Total Cost ($)",
+      getValue: (item) => item.meta?.total_cost || 0,
+      render: ({ item }) => {
+        const cost = item.meta?.total_cost || 0;
+        return `$${cost.toFixed(2)}`;
+      },
+    },
+    {
+      id: "cost_per_serving",
+      type: "number",
+      label: "Cost per Serving",
+      header: "Cost per Serving ($)",
+      getValue: (item) => item.meta?.cost_per_serving || 0,
+      render: ({ item }) => {
+        const cost = item.meta?.cost_per_serving || 0;
+        return `$${cost.toFixed(2)}`;
+      },
+    },
+  ];
+
+  const actions = [
+    {
+      id: "edit",
+      label: "Edit",
+      icon: <Icon icon={edit} />,
+      supportsBulk: true,
+      callback: (items) => {
+        const item = items[0];
+        navigateToEdit(item.id);
+      },
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      isDestructive: true,
+      supportsBulk: true,
+      icon: <Icon icon={trash} />,
+      RenderModal: ({ items, closeModal, onActionPerformed }) => (
+        <div style={{ padding: "20px" }}>
+          <p>Are you sure you want to delete {items.length} recipe(s)?</p>
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <button
               style={{
-                margin: "0 0 16px 0",
-                fontSize: "13px",
-                color: "#646970",
+                padding: "8px 16px",
+                backgroundColor: "#dc3545",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                console.log("Deleting items:", items);
+                onActionPerformed();
+                closeModal();
               }}
             >
-              Create a new ingredient with pricing information. This will be
-              available for all recipes.
-            </p>
-
-            <TextControl
-              label="Ingredient Name *"
-              value={newIngredient.name}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, name: value })
-              }
-              placeholder="e.g., All-purpose flour"
-              required
-            />
-
-            <TextControl
-              label="Price per Unit ($) *"
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={newIngredient.price}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, price: value })
-              }
-              placeholder="0.00"
-              required
-            />
-
-            <TextControl
-              label="Default Quantity *"
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={newIngredient.quantity}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, quantity: value })
-              }
-              placeholder="0"
-              required
-            />
-
-            <TextControl
-              label="Unit *"
-              value={newIngredient.unit}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, unit: value })
-              }
-              placeholder="e.g., grams, cups, oz"
-              required
-            />
-          </div>
-
-          <div className="modal-actions">
-            <Button
-              variant="primary"
-              onClick={createNewIngredient}
-              isBusy={isCreatingIngredient}
-              disabled={
-                !newIngredient.name.trim() ||
-                !newIngredient.price.trim() ||
-                !newIngredient.quantity.trim() ||
-                !newIngredient.unit.trim() ||
-                isNaN(parseFloat(newIngredient.price)) ||
-                parseFloat(newIngredient.price) <= 0 ||
-                isNaN(parseFloat(newIngredient.quantity)) ||
-                parseFloat(newIngredient.quantity) <= 0
-              }
-            >
-              {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-              disabled={isCreatingIngredient}
+              Confirm Delete
+            </button>
+            <button
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#6c757d",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={closeModal}
             >
               Cancel
-            </Button>
+            </button>
           </div>
-        </Modal>
-      )}
+        </div>
+      ),
+    },
+  ];
+
+  // If we're editing a specific recipe, show the SingleRecipe component
+  if (editingPostId) {
+    return (
+      <div style={{ padding: "20px" }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <button
+            onClick={navigateToList}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              padding: "8px 12px",
+              backgroundColor: "#f0f0f1",
+              border: "1px solid #c3c4c7",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "14px",
+            }}
+          >
+            <Icon icon={arrowLeft} />
+            Back to Recipes
+          </button>
+        </div>
+        <SingleRecipe postId={editingPostId} />
+      </div>
+    );
+  }
+
+  if (!hasResolved) {
+    return <div>Loading recipes...</div>;
+  }
+
+  // Debug: Log the first record to see the data structure
+  if (records && records.length > 0) {
+    console.log("First recipe record:", records[0]);
+    console.log("Title:", records[0].title);
+    console.log("Meta:", records[0].meta);
+  }
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Recipe Management</h1>
+      <DataViews
+        data={records || []}
+        fields={fields}
+        view={view}
+        onChangeView={setView}
+        actions={actions}
+        paginationInfo={{
+          totalItems: records?.length || 0,
+          totalPages: Math.ceil((records?.length || 0) / view.perPage),
+        }}
+        search={true}
+        searchLabel="Search recipes..."
+      />
     </div>
   );
 }

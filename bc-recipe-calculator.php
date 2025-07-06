@@ -31,6 +31,7 @@ class BCRecipeCalculator {
 		add_action( 'init', array( $this, 'register_ingredient_taxonomy' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_recipe_calculator_meta_box' ) );
+		add_action( 'admin_menu', array( $this, 'add_recipes_dashboard_page' ) );
 
 		// Add hooks for ingredient taxonomy custom fields.
 		add_action( 'bc_ingredient_add_form_fields', array( $this, 'add_ingredient_custom_fields' ) );
@@ -492,15 +493,38 @@ class BCRecipeCalculator {
 	}
 
 	/**
+	 * Add recipes dashboard page
+	 */
+	public function add_recipes_dashboard_page() {
+		add_menu_page(
+			'Recipes', // Page title.
+			'Recipes', // Menu title.
+			'manage_options', // Capability required.
+			'recipes-dashboard', // Menu slug.
+			array( $this, 'render_recipes_dashboard_page' ), // Callback function.
+			'dashicons-food', // Icon.
+			58 // Position.
+		);
+	}
+
+	/**
+	 * Render the recipes dashboard page
+	 */
+	public function render_recipes_dashboard_page() {
+		?>
+		<div id="bc-recipe-calculator"></div>
+		<?php
+	}
+
+	/**
 	 * Enqueue admin scripts for bc_recipe post type edit screen.
 	 *
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		global $post_type;
 
-		// Only enqueue on post.php or post-new.php for bc_recipe post type.
-		if ( ( 'post.php' === $hook || 'post-new.php' === $hook ) && 'bc_recipe' === $post_type ) {
+		// Only enqueue on the recipes dashboard page.
+		if ( 'toplevel_page_recipes-dashboard' === $hook ) {
 			$asset_file = plugin_dir_path( __FILE__ ) . 'build/index.asset.php';
 
 			if ( file_exists( $asset_file ) ) {

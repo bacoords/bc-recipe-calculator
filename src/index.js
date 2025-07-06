@@ -4,7 +4,7 @@ import "./style.scss";
 
 // Wait for DOM to be ready
 document.addEventListener("DOMContentLoaded", function () {
-  const container = document.getElementById("postbox-container-2");
+  const container = document.getElementById("bc-recipe-calculator");
 
   if (container) {
     const root = createRoot(container);
