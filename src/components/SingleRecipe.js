@@ -31,7 +31,6 @@ function SingleRecipe({ postId: propPostId }) {
 
   // State for saving data
   const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
 
   // State for price verification
   const [priceChanges, setPriceChanges] = useState([]);
@@ -55,17 +54,6 @@ function SingleRecipe({ postId: propPostId }) {
       loadRecipeData();
     }
   }, [postId]);
-
-  // Auto-save recipe data every 1 minute
-  useEffect(() => {
-    if (postId && (servings > 0 || ingredients.length > 0)) {
-      const intervalId = setInterval(() => {
-        saveRecipeData();
-      }, 60000); // Auto-save every 1 minute
-
-      return () => clearInterval(intervalId);
-    }
-  }, [servings, ingredients, postId]);
 
   const loadRecipeData = async () => {
     try {
@@ -202,8 +190,6 @@ function SingleRecipe({ postId: propPostId }) {
       if (!response.ok) {
         throw new Error("Failed to save recipe data");
       }
-
-      setLastSaved(new Date());
     } catch (error) {
       console.error("Error saving recipe data:", error);
       setError("Failed to save recipe data");
@@ -381,12 +367,6 @@ function SingleRecipe({ postId: propPostId }) {
         <div className="saving-indicator">
           <Spinner />
           <span>Saving...</span>
-        </div>
-      )}
-      {lastSaved && !isSaving && (
-        <div className="saved-indicator">
-          <span>✓ Last saved: {lastSaved.toLocaleTimeString()}</span>
-          <span className="auto-save-note">(Auto-saves every minute)</span>
         </div>
       )}
 

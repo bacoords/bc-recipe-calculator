@@ -60108,7 +60108,6 @@ function SingleRecipe({
 
   // State for saving data
   const [isSaving, setIsSaving] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [lastSaved, setLastSaved] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
 
   // State for price verification
   const [priceChanges, setPriceChanges] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
@@ -60132,17 +60131,6 @@ function SingleRecipe({
       loadRecipeData();
     }
   }, [postId]);
-
-  // Auto-save recipe data every 1 minute
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    if (postId && (servings > 0 || ingredients.length > 0)) {
-      const intervalId = setInterval(() => {
-        saveRecipeData();
-      }, 60000); // Auto-save every 1 minute
-
-      return () => clearInterval(intervalId);
-    }
-  }, [servings, ingredients, postId]);
   const loadRecipeData = async () => {
     try {
       const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`);
@@ -60249,7 +60237,6 @@ function SingleRecipe({
       if (!response.ok) {
         throw new Error("Failed to save recipe data");
       }
-      setLastSaved(new Date());
     } catch (error) {
       console.error("Error saving recipe data:", error);
       setError("Failed to save recipe data");
@@ -60394,14 +60381,6 @@ function SingleRecipe({
       className: "saving-indicator",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Spinner, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
         children: "Saving..."
-      })]
-    }), lastSaved && !isSaving && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-      className: "saved-indicator",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
-        children: ["\u2713 Last saved: ", lastSaved.toLocaleTimeString()]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
-        className: "auto-save-note",
-        children: "(Auto-saves every minute)"
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Card, {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CardHeader, {
