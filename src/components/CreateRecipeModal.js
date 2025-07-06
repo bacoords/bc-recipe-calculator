@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "@wordpress/data";
-import { Button, TextControl, Modal, Notice } from "@wordpress/components";
+import {
+  Button,
+  TextControl,
+  Modal,
+  Notice,
+  Flex,
+} from "@wordpress/components";
 
 function CreateRecipeModal({ onRecipeCreated }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,35 +72,33 @@ function CreateRecipeModal({ onRecipeCreated }) {
           onRequestClose={handleClose}
           className="create-recipe-modal"
         >
-          <div style={{ padding: "20px" }}>
-            <form onSubmit={handleSubmit}>
-              <TextControl
-                label="Recipe Title"
-                __nextHasNoMarginBottom
-                __next40pxDefaultSize
-                value={newRecipeTitle}
-                onChange={(value) => setNewRecipeTitle(value)}
-                placeholder="Enter recipe title..."
-                disabled={isCreating}
-              />
-            </form>
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                disabled={isCreating}
-              >
-                {isCreating ? "Creating..." : "Create Recipe"}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleClose}
-                disabled={isCreating}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+          <form onSubmit={handleSubmit}>
+            <TextControl
+              label="Recipe Title"
+              __nextHasNoMarginBottom
+              __next40pxDefaultSize
+              value={newRecipeTitle}
+              onChange={(value) => setNewRecipeTitle(value)}
+              placeholder="Enter recipe title..."
+              disabled={isCreating}
+            />
+          </form>
+          <Flex justify="flex-end" style={{ marginTop: "20px" }}>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={isCreating}
+            >
+              {isCreating ? "Creating..." : "Create Recipe"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleClose}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+          </Flex>
         </Modal>
       )}
     </>
