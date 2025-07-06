@@ -3,7 +3,7 @@ import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
-import { Icon, Button, Spinner } from "@wordpress/components";
+import { Icon, Button, Spinner, Modal, Flex } from "@wordpress/components";
 import { edit, trash, arrowLeft } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
@@ -181,36 +181,20 @@ function App() {
         };
 
         return (
-          <div style={{ padding: "20px" }}>
+          <div>
             <p>Are you sure you want to delete {items.length} recipe(s)?</p>
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <button
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+            <Flex justify="flex-end" style={{ marginTop: "20px" }}>
+              <Button
+                variant="primary"
+                isDestructive
                 onClick={handleConfirmDelete}
               >
                 Confirm Delete
-              </button>
-              <button
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-                onClick={closeModal}
-              >
+              </Button>
+              <Button variant="secondary" onClick={closeModal}>
                 Cancel
-              </button>
-            </div>
+              </Button>
+            </Flex>
           </div>
         );
       },
