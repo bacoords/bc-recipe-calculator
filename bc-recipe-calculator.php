@@ -30,7 +30,7 @@ class BCRecipeCalculator {
 		add_action( 'init', array( $this, 'register_recipe_post_type' ) );
 		add_action( 'init', array( $this, 'register_ingredient_taxonomy' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-		add_action( 'add_meta_boxes', array( $this, 'add_recipe_calculator_meta_box' ) );
+
 		add_action( 'admin_menu', array( $this, 'add_recipes_dashboard_page' ) );
 
 		// Add hooks for ingredient taxonomy custom fields.
@@ -466,30 +466,6 @@ class BCRecipeCalculator {
 				echo $cost_per_serving ? '$' . number_format( (float) $cost_per_serving, 2 ) : '—';
 				break;
 		}
-	}
-
-	/**
-	 * Add meta box for recipe calculator
-	 */
-	public function add_recipe_calculator_meta_box() {
-		add_meta_box(
-			'bc_recipe_calculator',
-			'Recipe Cost Calculator',
-			array( $this, 'render_recipe_calculator_meta_box' ),
-			'bc_recipe',
-			'normal',
-			'high'
-		);
-	}
-
-	/**
-	 * Render the recipe calculator meta box
-	 *
-	 * @param WP_Post $post The post object.
-	 */
-	public function render_recipe_calculator_meta_box( $post ) {
-		// Add nonce for security.
-		wp_nonce_field( 'bc_recipe_calculator_nonce', 'bc_recipe_calculator_nonce_field' );
 	}
 
 	/**
