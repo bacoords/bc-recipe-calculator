@@ -35842,38 +35842,6 @@ const pencil = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.js
 
 /***/ }),
 
-/***/ "./node_modules/@wordpress/icons/build-module/library/plus.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/@wordpress/icons/build-module/library/plus.js ***!
-  \********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/primitives */ "@wordpress/primitives");
-/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
-/**
- * WordPress dependencies
- */
-
-
-const plus = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__.SVG, {
-  xmlns: "http://www.w3.org/2000/svg",
-  viewBox: "0 0 24 24",
-  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_0__.Path, {
-    d: "M11 12.5V17.5H12.5V12.5H17.5V11H12.5V6H11V11H6V12.5H11Z"
-  })
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (plus);
-//# sourceMappingURL=plus.js.map
-
-/***/ }),
-
 /***/ "./node_modules/@wordpress/icons/build-module/library/trash.js":
 /*!*********************************************************************!*\
   !*** ./node_modules/@wordpress/icons/build-module/library/trash.js ***!
@@ -59460,18 +59428,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_dataviews_wp__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @wordpress/dataviews/wp */ "./node_modules/@wordpress/dataviews/build-wp/index.js");
+/* harmony import */ var _wordpress_dataviews_wp__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @wordpress/dataviews/wp */ "./node_modules/@wordpress/dataviews/build-wp/index.js");
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/core-data */ "@wordpress/core-data");
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/edit.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/trash.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/arrow-left.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/plus.js");
-/* harmony import */ var _SingleRecipe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SingleRecipe */ "./src/components/SingleRecipe.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/edit.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/trash.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/arrow-left.js");
+/* harmony import */ var _SingleRecipe__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SingleRecipe */ "./src/components/SingleRecipe.js");
+/* harmony import */ var _CreateRecipeModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./CreateRecipeModal */ "./src/components/CreateRecipeModal.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+
+
+
 
 
 
@@ -59496,8 +59469,6 @@ function App() {
 
   // Get the post ID from URL parameters
   const [editingPostId, setEditingPostId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
-  const [isCreatingRecipe, setIsCreatingRecipe] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [newRecipeTitle, setNewRecipeTitle] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("edit");
@@ -59547,42 +59518,8 @@ function App() {
     hasResolved,
     records
   } = (0,_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.useEntityRecords)("postType", "bc_recipe", queryArgs);
-  const createNewRecipe = async title => {
-    try {
-      const response = await fetch("/wp-json/wp/v2/bc_recipe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-WP-Nonce": wpApiSettings?.nonce || ""
-        },
-        body: JSON.stringify({
-          title: title,
-          status: "publish",
-          meta: {
-            total_cost: 0,
-            cost_per_serving: 0
-          }
-        })
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create recipe");
-      }
-      const newRecipe = await response.json();
-      return newRecipe;
-    } catch (error) {
-      console.error("Error creating recipe:", error);
-      throw error;
-    }
-  };
-  const handleCreateRecipe = async title => {
-    try {
-      const newRecipe = await createNewRecipe(title);
-      navigateToEdit(newRecipe.id);
-      setIsCreatingRecipe(false);
-      setNewRecipeTitle("");
-    } catch (error) {
-      alert("Failed to create recipe. Please try again.");
-    }
+  const handleRecipeCreated = newRecipe => {
+    navigateToEdit(newRecipe.id);
   };
   const fields = [{
     id: "title",
@@ -59593,7 +59530,7 @@ function App() {
     getValue: item => item.title?.rendered || item.title?.raw || "",
     render: ({
       item
-    }) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+    }) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("button", {
       style: {
         background: "none",
         border: "none",
@@ -59639,8 +59576,8 @@ function App() {
   const actions = [{
     id: "edit",
     label: "Edit",
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__["default"]
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Icon, {
+      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"]
     }),
     supportsBulk: true,
     callback: items => {
@@ -59652,70 +59589,89 @@ function App() {
     label: "Delete",
     isDestructive: true,
     supportsBulk: true,
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"]
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Icon, {
+      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__["default"]
     }),
     RenderModal: ({
       items,
       closeModal,
       onActionPerformed
-    }) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-      style: {
-        padding: "20px"
-      },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
-        children: ["Are you sure you want to delete ", items.length, " recipe(s)?"]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-        style: {
-          display: "flex",
-          gap: "10px",
-          marginTop: "20px"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-          style: {
-            padding: "8px 16px",
-            backgroundColor: "#dc3545",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          },
-          onClick: () => {
-            console.log("Deleting items:", items);
+    }) => {
+      const {
+        deleteEntityRecord
+      } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_1__.store);
+      const handleConfirmDelete = async () => {
+        try {
+          // Delete each recipe using the WordPress data store
+          for (const item of items) {
+            await deleteEntityRecord("postType", "bc_recipe", item.id);
+          }
+          console.log(`Successfully deleted ${items.length} recipe(s)`);
+
+          // Call onActionPerformed if it exists
+          if (typeof onActionPerformed === "function") {
             onActionPerformed();
-            closeModal();
-          },
-          children: "Confirm Delete"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+          }
+          closeModal();
+        } catch (error) {
+          console.error("Error deleting recipes:", error);
+          // You could add error handling here, like showing a notification
+        }
+      };
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+        style: {
+          padding: "20px"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("p", {
+          children: ["Are you sure you want to delete ", items.length, " recipe(s)?"]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
           style: {
-            padding: "8px 16px",
-            backgroundColor: "#6c757d",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
+            display: "flex",
+            gap: "10px",
+            marginTop: "20px"
           },
-          onClick: closeModal,
-          children: "Cancel"
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("button", {
+            style: {
+              padding: "8px 16px",
+              backgroundColor: "#dc3545",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            },
+            onClick: handleConfirmDelete,
+            children: "Confirm Delete"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("button", {
+            style: {
+              padding: "8px 16px",
+              backgroundColor: "#6c757d",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            },
+            onClick: closeModal,
+            children: "Cancel"
+          })]
         })]
-      })]
-    })
+      });
+    }
   }];
 
   // If we're editing a specific recipe, show the SingleRecipe component
   if (editingPostId) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
       style: {
         padding: "20px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
         style: {
           marginBottom: "20px",
           display: "flex",
           alignItems: "center",
           gap: "10px"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("button", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("button", {
           onClick: navigateToList,
           style: {
             display: "flex",
@@ -59728,17 +59684,17 @@ function App() {
             cursor: "pointer",
             fontSize: "14px"
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-            icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Icon, {
+            icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_9__["default"]
           }), "Back to Recipes"]
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_SingleRecipe__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_SingleRecipe__WEBPACK_IMPORTED_MODULE_4__["default"], {
         postId: editingPostId
       })]
     });
   }
   if (!hasResolved) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
       children: "Loading recipes..."
     });
   }
@@ -59749,42 +59705,26 @@ function App() {
     console.log("Title:", records[0].title);
     console.log("Meta:", records[0].meta);
   }
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
     style: {
       padding: "20px"
     },
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
       style: {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: "20px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("h1", {
         style: {
           margin: 0
         },
         children: "Recipe Management"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("button", {
-        onClick: () => setIsCreatingRecipe(true),
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "10px 16px",
-          backgroundColor: "#0073aa",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-          fontWeight: "500"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
-          icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__["default"]
-        }), "Add New Recipe"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_CreateRecipeModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        onRecipeCreated: handleRecipeCreated
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_dataviews_wp__WEBPACK_IMPORTED_MODULE_9__.DataViews, {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_dataviews_wp__WEBPACK_IMPORTED_MODULE_10__.DataViews, {
       data: records || [],
       fields: fields,
       view: view,
@@ -59796,104 +59736,6 @@ function App() {
       },
       search: true,
       searchLabel: "Search recipes..."
-    }), isCreatingRecipe && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-      style: {
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000
-      },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-        style: {
-          backgroundColor: "white",
-          padding: "30px",
-          borderRadius: "8px",
-          minWidth: "400px",
-          maxWidth: "500px"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
-          style: {
-            marginTop: 0,
-            marginBottom: "20px"
-          },
-          children: "Create New Recipe"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
-          onSubmit: e => {
-            e.preventDefault();
-            if (newRecipeTitle.trim()) {
-              handleCreateRecipe(newRecipeTitle.trim());
-            }
-          },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-            style: {
-              marginBottom: "20px"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
-              htmlFor: "recipe-title",
-              style: {
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "bold"
-              },
-              children: "Recipe Title:"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
-              id: "recipe-title",
-              type: "text",
-              value: newRecipeTitle,
-              onChange: e => setNewRecipeTitle(e.target.value),
-              style: {
-                width: "100%",
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "14px"
-              },
-              placeholder: "Enter recipe title...",
-              autoFocus: true
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-            style: {
-              display: "flex",
-              gap: "10px",
-              justifyContent: "flex-end"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-              type: "button",
-              onClick: () => {
-                setIsCreatingRecipe(false);
-                setNewRecipeTitle("");
-              },
-              style: {
-                padding: "8px 16px",
-                backgroundColor: "#6c757d",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              },
-              children: "Cancel"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-              type: "submit",
-              disabled: !newRecipeTitle.trim(),
-              style: {
-                padding: "8px 16px",
-                backgroundColor: newRecipeTitle.trim() ? "#0073aa" : "#ccc",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: newRecipeTitle.trim() ? "pointer" : "not-allowed"
-              },
-              children: "Create Recipe"
-            })]
-          })]
-        })]
-      })
     })]
   });
 }
@@ -60092,6 +59934,127 @@ function CreateIngredientModal({
   });
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CreateIngredientModal);
+
+/***/ }),
+
+/***/ "./src/components/CreateRecipeModal.js":
+/*!*********************************************!*\
+  !*** ./src/components/CreateRecipeModal.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+function CreateRecipeModal({
+  onRecipeCreated
+}) {
+  const [isOpen, setIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [newRecipeTitle, setNewRecipeTitle] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+  const [isCreating, setIsCreating] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const {
+    saveEntityRecord
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useDispatch)("core");
+  const createNewRecipe = async title => {
+    try {
+      const savedRecord = await saveEntityRecord("postType", "bc_recipe", {
+        title: title,
+        status: "publish",
+        meta: {
+          total_cost: 0,
+          cost_per_serving: 0
+        }
+      });
+      return savedRecord;
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+      throw error;
+    }
+  };
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!newRecipeTitle.trim()) return;
+    try {
+      setIsCreating(true);
+      const newRecipe = await createNewRecipe(newRecipeTitle.trim());
+      setNewRecipeTitle("");
+      setIsOpen(false);
+      onRecipeCreated(newRecipe);
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+      alert("Failed to create recipe. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+  const handleClose = () => {
+    if (!isCreating) {
+      setNewRecipeTitle("");
+      setIsOpen(false);
+    }
+  };
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+      variant: "primary",
+      onClick: handleOpen,
+      children: "Add New Recipe"
+    }), isOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Modal, {
+      title: "Create New Recipe",
+      onRequestClose: handleClose,
+      className: "create-recipe-modal",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+        style: {
+          padding: "20px"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("form", {
+          onSubmit: handleSubmit,
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.TextControl, {
+            label: "Recipe Title",
+            value: newRecipeTitle,
+            onChange: value => setNewRecipeTitle(value),
+            placeholder: "Enter recipe title...",
+            disabled: isCreating
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          style: {
+            display: "flex",
+            gap: "10px",
+            marginTop: "20px"
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+            variant: "primary",
+            onClick: handleSubmit,
+            disabled: isCreating,
+            children: isCreating ? "Creating..." : "Create Recipe"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+            variant: "secondary",
+            onClick: handleClose,
+            disabled: isCreating,
+            children: "Cancel"
+          })]
+        })]
+      })
+    })]
+  });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CreateRecipeModal);
 
 /***/ }),
 
