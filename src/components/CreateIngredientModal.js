@@ -125,6 +125,7 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
 
           <TextControl
             label="Ingredient Name *"
+            __nextHasNoMarginBottom
             value={newIngredient.name}
             onChange={(value) =>
               setNewIngredient({ ...newIngredient, name: value })
@@ -135,6 +136,7 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
 
           <TextControl
             label="Price per Unit ($) *"
+            __nextHasNoMarginBottom
             type="number"
             step="0.01"
             min="0.01"
@@ -148,6 +150,7 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
 
           <TextControl
             label="Default Quantity *"
+            __nextHasNoMarginBottom
             type="number"
             step="0.01"
             min="0.01"
@@ -161,6 +164,7 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
 
           <TextControl
             label="Unit *"
+            __nextHasNoMarginBottom
             value={newIngredient.unit}
             onChange={(value) =>
               setNewIngredient({ ...newIngredient, unit: value })

@@ -70,6 +70,8 @@ function CreateRecipeModal({ onRecipeCreated }) {
             <form onSubmit={handleSubmit}>
               <TextControl
                 label="Recipe Title"
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
                 value={newRecipeTitle}
                 onChange={(value) => setNewRecipeTitle(value)}
                 placeholder="Enter recipe title..."

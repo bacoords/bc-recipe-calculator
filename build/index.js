@@ -59875,6 +59875,7 @@ function CreateIngredientModal({
         children: error
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
         label: "Ingredient Name *",
+        __nextHasNoMarginBottom: true,
         value: newIngredient.name,
         onChange: value => setNewIngredient({
           ...newIngredient,
@@ -59884,6 +59885,7 @@ function CreateIngredientModal({
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
         label: "Price per Unit ($) *",
+        __nextHasNoMarginBottom: true,
         type: "number",
         step: "0.01",
         min: "0.01",
@@ -59896,6 +59898,7 @@ function CreateIngredientModal({
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
         label: "Default Quantity *",
+        __nextHasNoMarginBottom: true,
         type: "number",
         step: "0.01",
         min: "0.01",
@@ -59908,6 +59911,7 @@ function CreateIngredientModal({
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
         label: "Unit *",
+        __nextHasNoMarginBottom: true,
         value: newIngredient.unit,
         onChange: value => setNewIngredient({
           ...newIngredient,
@@ -60027,6 +60031,8 @@ function CreateRecipeModal({
           onSubmit: handleSubmit,
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.TextControl, {
             label: "Recipe Title",
+            __nextHasNoMarginBottom: true,
+            __next40pxDefaultSize: true,
             value: newRecipeTitle,
             onChange: value => setNewRecipeTitle(value),
             placeholder: "Enter recipe title...",
@@ -60454,6 +60460,7 @@ function SingleRecipe({
                 children: "Select Ingredient:"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
                 __next40pxDefaultSize: true,
+                __nextHasNoMarginBottom: true,
                 value: ingredient.termId?.toString() || "",
                 options: [{
                   label: "Choose an ingredient...",
@@ -60467,6 +60474,7 @@ function SingleRecipe({
                 children: ["Amount Used in Recipe (", ingredient.termId ? availableIngredients.find(ing => ing.id === ingredient.termId)?.meta?.ingredient_unit || "units" : "units", "):"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
                 __next40pxDefaultSize: true,
+                __nextHasNoMarginBottom: true,
                 type: "number",
                 step: "0.01",
                 value: ingredient.recipeAmount,

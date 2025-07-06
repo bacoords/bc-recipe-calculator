@@ -461,6 +461,7 @@ function SingleRecipe({ postId: propPostId }) {
                   <label>Select Ingredient:</label>
                   <SelectControl
                     __next40pxDefaultSize
+                    __nextHasNoMarginBottom
                     value={ingredient.termId?.toString() || ""}
                     options={[
                       { label: "Choose an ingredient...", value: "" },
@@ -484,6 +485,7 @@ function SingleRecipe({ postId: propPostId }) {
                   </label>
                   <TextControl
                     __next40pxDefaultSize
+                    __nextHasNoMarginBottom
                     type="number"
                     step="0.01"
                     value={ingredient.recipeAmount}
