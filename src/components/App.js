@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { Icon } from "@wordpress/components";
-import { edit, external, trash, arrowLeft } from "@wordpress/icons";
+import { edit, external, trash, arrowLeft, plus } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 
 function App() {
@@ -22,6 +22,8 @@ function App() {
 
   // Get the post ID from URL parameters
   const [editingPostId, setEditingPostId] = useState(null);
+  const [isCreatingRecipe, setIsCreatingRecipe] = useState(false);
+  const [newRecipeTitle, setNewRecipeTitle] = useState("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -78,6 +80,47 @@ function App() {
     "bc_recipe",
     queryArgs
   );
+
+  const createNewRecipe = async (title) => {
+    try {
+      const response = await fetch("/wp-json/wp/v2/bc_recipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": wpApiSettings?.nonce || "",
+        },
+        body: JSON.stringify({
+          title: title,
+          status: "publish",
+          meta: {
+            total_cost: 0,
+            cost_per_serving: 0,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create recipe");
+      }
+
+      const newRecipe = await response.json();
+      return newRecipe;
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+      throw error;
+    }
+  };
+
+  const handleCreateRecipe = async (title) => {
+    try {
+      const newRecipe = await createNewRecipe(title);
+      navigateToEdit(newRecipe.id);
+      setIsCreatingRecipe(false);
+      setNewRecipeTitle("");
+    } catch (error) {
+      alert("Failed to create recipe. Please try again.");
+    }
+  };
 
   const fields = [
     {
@@ -238,7 +281,35 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Recipe Management</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h1 style={{ margin: 0 }}>Recipe Management</h1>
+        <button
+          onClick={() => setIsCreatingRecipe(true)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "10px 16px",
+            backgroundColor: "#0073aa",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "500",
+          }}
+        >
+          <Icon icon={plus} />
+          Add New Recipe
+        </button>
+      </div>
       <DataViews
         data={records || []}
         fields={fields}
@@ -252,6 +323,113 @@ function App() {
         search={true}
         searchLabel="Search recipes..."
       />
+
+      {/* Create Recipe Modal */}
+      {isCreatingRecipe && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "30px",
+              borderRadius: "8px",
+              minWidth: "400px",
+              maxWidth: "500px",
+            }}
+          >
+            <h2 style={{ marginTop: 0, marginBottom: "20px" }}>
+              Create New Recipe
+            </h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (newRecipeTitle.trim()) {
+                  handleCreateRecipe(newRecipeTitle.trim());
+                }
+              }}
+            >
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  htmlFor="recipe-title"
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Recipe Title:
+                </label>
+                <input
+                  id="recipe-title"
+                  type="text"
+                  value={newRecipeTitle}
+                  onChange={(e) => setNewRecipeTitle(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                  }}
+                  placeholder="Enter recipe title..."
+                  autoFocus
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreatingRecipe(false);
+                    setNewRecipeTitle("");
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!newRecipeTitle.trim()}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: newRecipeTitle.trim() ? "#0073aa" : "#ccc",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: newRecipeTitle.trim() ? "pointer" : "not-allowed",
+                  }}
+                >
+                  Create Recipe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

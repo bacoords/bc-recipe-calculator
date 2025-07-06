@@ -2,7 +2,6 @@ import { useState, useEffect } from "@wordpress/element";
 import {
   Button,
   TextControl,
-  Modal,
   SelectControl,
   Spinner,
   Notice,
@@ -12,6 +11,7 @@ import {
   CardBody,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import CreateIngredientModal from "./CreateIngredientModal";
 
 function SingleRecipe({ postId: propPostId }) {
   // Get the post ID from props or from the WordPress environment
@@ -26,15 +26,8 @@ function SingleRecipe({ postId: propPostId }) {
   // New state for taxonomy integration
   const [availableIngredients, setAvailableIngredients] = useState([]);
   const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newIngredient, setNewIngredient] = useState({
-    name: "",
-    price: "",
-    quantity: "",
-    unit: "",
-  });
-  const [isCreatingIngredient, setIsCreatingIngredient] = useState(false);
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for saving data
   const [isSaving, setIsSaving] = useState(false);
@@ -236,82 +229,6 @@ function SingleRecipe({ postId: propPostId }) {
     }
   };
 
-  const createNewIngredient = async () => {
-    if (!newIngredient.name.trim()) {
-      setError("Ingredient name is required");
-      return;
-    }
-
-    if (!newIngredient.price.trim()) {
-      setError("Price is required");
-      return;
-    }
-
-    if (
-      isNaN(parseFloat(newIngredient.price)) ||
-      parseFloat(newIngredient.price) <= 0
-    ) {
-      setError("Price must be a valid positive number");
-      return;
-    }
-
-    if (!newIngredient.quantity.trim()) {
-      setError("Quantity is required");
-      return;
-    }
-
-    if (
-      isNaN(parseFloat(newIngredient.quantity)) ||
-      parseFloat(newIngredient.quantity) <= 0
-    ) {
-      setError("Quantity must be a valid positive number");
-      return;
-    }
-
-    if (!newIngredient.unit.trim()) {
-      setError("Unit is required");
-      return;
-    }
-
-    try {
-      setIsCreatingIngredient(true);
-      setError("");
-
-      const response = await fetch("/wp-json/wp/v2/bc_ingredient", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-WP-Nonce": wpApiSettings.nonce,
-        },
-        body: JSON.stringify({
-          name: newIngredient.name,
-          meta: {
-            ingredient_price: newIngredient.price,
-            ingredient_quantity: newIngredient.quantity,
-            ingredient_unit: newIngredient.unit,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create ingredient");
-      }
-
-      const createdIngredient = await response.json();
-      setAvailableIngredients([...availableIngredients, createdIngredient]);
-      setIsModalOpen(false);
-      setNewIngredient({ name: "", price: "", quantity: "", unit: "" });
-
-      // Refresh the ingredients list
-      await fetchIngredients();
-    } catch (error) {
-      console.error("Error creating ingredient:", error);
-      setError("Failed to create ingredient");
-    } finally {
-      setIsCreatingIngredient(false);
-    }
-  };
-
   const addIngredient = () => {
     const newIngredient = {
       id: Date.now(),
@@ -321,6 +238,14 @@ function SingleRecipe({ postId: propPostId }) {
       cost: 0,
     };
     setIngredients([...ingredients, newIngredient]);
+  };
+
+  const handleIngredientCreated = async (createdIngredient) => {
+    // Add the new ingredient to the available ingredients list
+    setAvailableIngredients([...availableIngredients, createdIngredient]);
+
+    // Refresh the ingredients list
+    await fetchIngredients();
   };
 
   const removeIngredient = (id) => {
@@ -628,99 +553,11 @@ function SingleRecipe({ postId: propPostId }) {
         </CardBody>
       </Card>
 
-      {isModalOpen && (
-        <Modal
-          title="Create New Ingredient"
-          onRequestClose={() => setIsModalOpen(false)}
-          className="ingredient-modal"
-        >
-          <div className="modal-content">
-            <p
-              style={{
-                margin: "0 0 16px 0",
-                fontSize: "13px",
-                color: "#646970",
-              }}
-            >
-              Create a new ingredient with pricing information. This will be
-              available for all recipes.
-            </p>
-
-            <TextControl
-              label="Ingredient Name *"
-              value={newIngredient.name}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, name: value })
-              }
-              placeholder="e.g., All-purpose flour"
-              required
-            />
-
-            <TextControl
-              label="Price per Unit ($) *"
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={newIngredient.price}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, price: value })
-              }
-              placeholder="0.00"
-              required
-            />
-
-            <TextControl
-              label="Default Quantity *"
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={newIngredient.quantity}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, quantity: value })
-              }
-              placeholder="0"
-              required
-            />
-
-            <TextControl
-              label="Unit *"
-              value={newIngredient.unit}
-              onChange={(value) =>
-                setNewIngredient({ ...newIngredient, unit: value })
-              }
-              placeholder="e.g., grams, cups, oz"
-              required
-            />
-          </div>
-
-          <div className="modal-actions">
-            <Button
-              variant="primary"
-              onClick={createNewIngredient}
-              isBusy={isCreatingIngredient}
-              disabled={
-                !newIngredient.name.trim() ||
-                !newIngredient.price.trim() ||
-                !newIngredient.quantity.trim() ||
-                !newIngredient.unit.trim() ||
-                isNaN(parseFloat(newIngredient.price)) ||
-                parseFloat(newIngredient.price) <= 0 ||
-                isNaN(parseFloat(newIngredient.quantity)) ||
-                parseFloat(newIngredient.quantity) <= 0
-              }
-            >
-              {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-              disabled={isCreatingIngredient}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Modal>
-      )}
+      <CreateIngredientModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onIngredientCreated={handleIngredientCreated}
+      />
     </div>
   );
 }
