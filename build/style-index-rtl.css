@@ -121,11 +121,7 @@
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  padding: 20px;
-  margin-bottom: 16px;
-  background: #f6f7f7;
-  border-radius: 4px;
-  border: 1px solid #dcdcde;
+  margin-bottom: 1rem;
 }
 .bc-recipe-calculator .ingredient-row .ingredient-fields {
   flex: 1;

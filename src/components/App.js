@@ -143,13 +143,34 @@ function App() {
       return;
     }
 
-    if (newIngredient.price && isNaN(parseFloat(newIngredient.price))) {
-      setError("Price must be a valid number");
+    if (!newIngredient.price.trim()) {
+      setError("Price is required");
       return;
     }
 
-    if (newIngredient.quantity && isNaN(parseFloat(newIngredient.quantity))) {
-      setError("Quantity must be a valid number");
+    if (
+      isNaN(parseFloat(newIngredient.price)) ||
+      parseFloat(newIngredient.price) <= 0
+    ) {
+      setError("Price must be a valid positive number");
+      return;
+    }
+
+    if (!newIngredient.quantity.trim()) {
+      setError("Quantity is required");
+      return;
+    }
+
+    if (
+      isNaN(parseFloat(newIngredient.quantity)) ||
+      parseFloat(newIngredient.quantity) <= 0
+    ) {
+      setError("Quantity must be a valid positive number");
+      return;
+    }
+
+    if (!newIngredient.unit.trim()) {
+      setError("Unit is required");
       return;
     }
 
@@ -250,13 +271,32 @@ function App() {
       setIngredients(
         ingredients.map((ingredient) => {
           if (ingredient.id === id) {
-            return {
+            const updated = {
               ...ingredient,
               termId: selectedIngredient.id,
               name: selectedIngredient.name,
-              recipeAmount: "",
-              cost: 0,
             };
+
+            // Calculate cost for this ingredient using taxonomy data
+            if (updated.termId && updated.recipeAmount) {
+              const price = parseFloat(
+                selectedIngredient.meta?.ingredient_price || 0
+              );
+              const packageAmount = parseFloat(
+                selectedIngredient.meta?.ingredient_quantity || 0
+              );
+              const recipeAmount = parseFloat(updated.recipeAmount);
+
+              if (packageAmount > 0) {
+                updated.cost = (price / packageAmount) * recipeAmount;
+              } else {
+                updated.cost = 0;
+              }
+            } else {
+              updated.cost = 0;
+            }
+
+            return updated;
           }
           return ingredient;
         })
@@ -327,14 +367,6 @@ function App() {
       <div className="calculator-section">
         <div className="ingredients-header">
           <h3>Ingredients</h3>
-          <div className="ingredient-actions">
-            <Button variant="primary" onClick={addIngredient}>
-              + Add Ingredient
-            </Button>
-            <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
-              + Create New Ingredient
-            </Button>
-          </div>
         </div>
 
         {error && (
@@ -412,6 +444,15 @@ function App() {
             </Button>
           </div>
         ))}
+
+        <div className="ingredient-actions">
+          <Button variant="primary" onClick={addIngredient}>
+            + Add Ingredient
+          </Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
+            + Create New Ingredient
+          </Button>
+        </div>
       </div>
 
       <div className="calculator-section results">
@@ -449,43 +490,49 @@ function App() {
             </p>
 
             <TextControl
-              label="Ingredient Name"
+              label="Ingredient Name *"
               value={newIngredient.name}
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, name: value })
               }
               placeholder="e.g., All-purpose flour"
+              required
             />
 
             <TextControl
-              label="Price per Unit ($)"
+              label="Price per Unit ($) *"
               type="number"
               step="0.01"
+              min="0.01"
               value={newIngredient.price}
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, price: value })
               }
               placeholder="0.00"
+              required
             />
 
             <TextControl
-              label="Default Quantity"
+              label="Default Quantity *"
               type="number"
               step="0.01"
+              min="0.01"
               value={newIngredient.quantity}
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, quantity: value })
               }
               placeholder="0"
+              required
             />
 
             <TextControl
-              label="Unit"
+              label="Unit *"
               value={newIngredient.unit}
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, unit: value })
               }
               placeholder="e.g., grams, cups, oz"
+              required
             />
           </div>
 
@@ -494,7 +541,16 @@ function App() {
               variant="primary"
               onClick={createNewIngredient}
               isBusy={isCreatingIngredient}
-              disabled={!newIngredient.name.trim()}
+              disabled={
+                !newIngredient.name.trim() ||
+                !newIngredient.price.trim() ||
+                !newIngredient.quantity.trim() ||
+                !newIngredient.unit.trim() ||
+                isNaN(parseFloat(newIngredient.price)) ||
+                parseFloat(newIngredient.price) <= 0 ||
+                isNaN(parseFloat(newIngredient.quantity)) ||
+                parseFloat(newIngredient.quantity) <= 0
+              }
             >
               {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
             </Button>
