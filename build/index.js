@@ -167,7 +167,10 @@ function App() {
         return ingredient;
       });
 
-      // Update the post with title, status, and meta data
+      // Get the term IDs of selected ingredients for taxonomy assignment
+      const ingredientTermIds = ingredients.filter(ingredient => ingredient.termId).map(ingredient => ingredient.termId);
+
+      // Update the post with title, status, meta data, and taxonomy terms
       const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`, {
         method: "POST",
         headers: {
@@ -182,7 +185,8 @@ function App() {
             recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
             total_cost: totalCost,
             cost_per_serving: costPerServing
-          }
+          },
+          bc_ingredient: ingredientTermIds
         })
       });
       if (!response.ok) {
