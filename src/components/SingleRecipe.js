@@ -14,11 +14,18 @@ import {
   CardBody,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import { useDispatch, useSelect } from "@wordpress/data";
+import { store as coreDataStore } from "@wordpress/core-data";
 import CreateIngredientModal from "./CreateIngredientModal";
 
 function SingleRecipe({ postId: propPostId }) {
   // Get the post ID from props or from the WordPress environment
   const postId = propPostId || window.bcRecipeCalculator?.postId || 0;
+
+  // Get the save function from the data store
+  const { saveEditedEntityRecord, editEntityRecord } =
+    useDispatch(coreDataStore);
+  const { getEntityRecord } = useSelect((select) => select(coreDataStore), []);
 
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState(1);
@@ -60,11 +67,10 @@ function SingleRecipe({ postId: propPostId }) {
 
   const loadRecipeData = async () => {
     try {
-      const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`);
-      if (!response.ok) {
+      const data = await getEntityRecord("postType", "bc_recipe", postId);
+      if (!data) {
         throw new Error("Failed to load recipe data");
       }
-      const data = await response.json();
       setServings(data.meta?.recipe_servings || 1);
       const loadedIngredients = data.meta?.recipe_ingredients
         ? JSON.parse(data.meta.recipe_ingredients)
@@ -170,29 +176,21 @@ function SingleRecipe({ postId: propPostId }) {
         .filter((ingredient) => ingredient.termId)
         .map((ingredient) => ingredient.termId);
 
-      // Update the post with title, status, meta data, and taxonomy terms
-      const response = await fetch(`/wp-json/wp/v2/bc_recipe/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-WP-Nonce": wpApiSettings.nonce,
+      // Update the entity record in the store
+      editEntityRecord("postType", "bc_recipe", postId, {
+        title: title,
+        status: "publish",
+        meta: {
+          recipe_servings: servings,
+          recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
+          total_cost: totalCost,
+          cost_per_serving: costPerServing,
         },
-        body: JSON.stringify({
-          title: title,
-          status: "publish",
-          meta: {
-            recipe_servings: servings,
-            recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
-            total_cost: totalCost,
-            cost_per_serving: costPerServing,
-          },
-          bc_ingredient: ingredientTermIds,
-        }),
+        bc_ingredient: ingredientTermIds,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save recipe data");
-      }
+      // Save the edited entity record
+      await saveEditedEntityRecord("postType", "bc_recipe", postId);
     } catch (error) {
       console.error("Error saving recipe data:", error);
       setError("Failed to save recipe data");

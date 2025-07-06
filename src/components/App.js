@@ -217,6 +217,14 @@ function App() {
     },
   ];
 
+  if (!hasResolved) {
+    return (
+      <div style={{ padding: "1rem", textAlign: "center" }}>
+        <Spinner />
+      </div>
+    );
+  }
+
   // If we're editing a specific recipe, show the SingleRecipe component
   if (editingPostId) {
     return (
@@ -232,21 +240,6 @@ function App() {
         </div>
       </div>
     );
-  }
-
-  if (!hasResolved) {
-    return (
-      <div style={{ padding: "1rem", textAlign: "center" }}>
-        <Spinner />
-      </div>
-    );
-  }
-
-  // Debug: Log the first record to see the data structure
-  if (records && records.length > 0) {
-    console.log("First recipe record:", records[0]);
-    console.log("Title:", records[0].title);
-    console.log("Meta:", records[0].meta);
   }
 
   return (
