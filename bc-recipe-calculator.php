@@ -227,6 +227,8 @@ class BCRecipeCalculator {
 	 * Add custom fields to the ingredient add form
 	 */
 	public function add_ingredient_custom_fields() {
+		// Add nonce for security.
+		wp_nonce_field( 'add-tag', '_wpnonce_add-tag' );
 		?>
 		<div class="form-field">
 			<label for="ingredient_price"><?php esc_html_e( 'Price', 'bc-recipe-calculator' ); ?></label>
@@ -292,8 +294,25 @@ class BCRecipeCalculator {
 	 * @param int $term_id The term ID.
 	 */
 	public function save_ingredient_custom_fields( $term_id ) {
-		// Verify nonce for security.
-		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'update-tag_' . $term_id ) ) {
+		// Verify nonce for security - handle both creation and editing scenarios.
+		$nonce_verified = false;
+
+		if ( isset( $_POST['_wpnonce'] ) ) {
+			// Check for edit nonce (when editing existing term).
+			if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'update-tag_' . $term_id ) ) {
+				$nonce_verified = true;
+			}
+			// Check for add nonce (when creating new term).
+			elseif ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'add-tag' ) ) {
+				$nonce_verified = true;
+			}
+		}
+		// Check for the specific add-tag nonce field we added.
+		elseif ( isset( $_POST['_wpnonce_add-tag'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce_add-tag'] ) ), 'add-tag' ) ) {
+			$nonce_verified = true;
+		}
+
+		if ( ! $nonce_verified ) {
 			return;
 		}
 
