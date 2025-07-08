@@ -123,6 +123,19 @@
 			color: #2271b1;
 		}
 	}
+
+	@media (max-width: 768px) {
+		.recipe-title-servings,
+		.grid-ingredient {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+		.recipe-title {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+	}
 }
 
 #wpwrap {

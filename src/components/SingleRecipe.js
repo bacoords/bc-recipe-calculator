@@ -358,6 +358,7 @@ function SingleRecipe({ postId: propPostId }) {
         justify="space-between"
         align="center"
         style={{ marginBottom: "1rem" }}
+        className="recipe-title"
       >
         <h1>{title}</h1>
         <Button
@@ -376,6 +377,7 @@ function SingleRecipe({ postId: propPostId }) {
               templateColumns="75% 25%"
               align="center"
               style={{ marginBlock: "1rem" }}
+              className="recipe-title-servings"
             >
               <TextControl
                 __next40pxDefaultSize
@@ -450,7 +452,11 @@ function SingleRecipe({ postId: propPostId }) {
                 className="ingredient-row"
                 style={{ marginBottom: "1rem" }}
               >
-                <Grid templateColumns="40% 40% 20%" align="center">
+                <Grid
+                  templateColumns="40% 40% 20%"
+                  align="center"
+                  className="grid-ingredient"
+                >
                   <SelectControl
                     __next40pxDefaultSize
                     __nextHasNoMarginBottom
