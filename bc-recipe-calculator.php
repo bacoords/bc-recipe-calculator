@@ -76,7 +76,7 @@ class BCRecipeCalculator {
 			'labels'             => $labels,
 			'public'             => false,
 			'publicly_queryable' => false,
-			'show_ui'            => true,
+			'show_ui'            => false,
 			'show_in_menu'       => true,
 			'query_var'          => false,
 			'rewrite'            => false,
