@@ -12,6 +12,11 @@ A WordPress plugin that provides a custom recipe management system with cost cal
 - **Price Tracking**: Tracks ingredient price changes and alerts users
 - **Serving Calculator**: Calculate cost per serving based on recipe yield
 
+### To Dos
+
+- Import/Export
+- Sync to COGS
+
 ## Installation
 
 ### Prerequisites
