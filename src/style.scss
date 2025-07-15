@@ -138,6 +138,11 @@
 	}
 }
 
+@media (max-width: 768px) {
+	#bc-recipe-calculator .shopping-list-grid {
+		grid-template-columns: 1fr;
+	}
+}
 #wpwrap {
 	background-color: #fff;
 	.wrap {

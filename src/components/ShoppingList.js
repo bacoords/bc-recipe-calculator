@@ -69,12 +69,18 @@ function ShoppingList() {
             if (key) {
               // Get unit from ingredient taxonomy data
               let unit = "units";
+              let packageQuantity = 0;
+              let packagePrice = 0;
+
               if (ingredient.termId) {
                 const ingredientData = availableIngredients.find(
                   (ing) => ing.id === ingredient.termId
                 );
                 if (ingredientData) {
                   unit = ingredientData.meta?.ingredient_unit || "units";
+                  packageQuantity =
+                    ingredientData.meta?.ingredient_quantity || 0;
+                  packagePrice = ingredientData.meta?.ingredient_price || 0;
                 }
               }
 
@@ -84,8 +90,8 @@ function ShoppingList() {
                 totalAmount: 0,
                 recipeAmount: ingredient.recipeAmount,
                 unit: unit,
-                packageQuantity: ingredientData?.meta?.ingredient_quantity || 0,
-                packagePrice: ingredientData?.meta?.ingredient_price || 0,
+                packageQuantity: packageQuantity,
+                packagePrice: packagePrice,
                 recipes: [],
               };
 
@@ -147,7 +153,7 @@ function ShoppingList() {
     <div style={{ padding: "1rem" }}>
       <h2>{__("Shopping List", "bc-recipe-calculator")}</h2>
 
-      <Grid columns={2} gap={4}>
+      <Grid columns={2} gap={4} className="shopping-list-grid">
         {/* Recipe Selection */}
         <Card>
           <CardHeader>
@@ -242,13 +248,13 @@ function ShoppingList() {
                     <div>
                       <h4 style={{ margin: "0 0 0.5rem 0" }}>
                         {ingredient.name}
-                      </h4>
-                      <p style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}>
-                        {__("Total needed:", "bc-recipe-calculator")}{" "}
+                        {" - "}
                         {ingredient.totalAmount} {ingredient.unit}
-                      </p>
+                      </h4>
                       {ingredient.packageQuantity > 0 && (
-                        <p style={{ margin: "0 0 0.5rem 0", color: "#0073aa" }}>
+                        <p
+                          style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}
+                        >
                           {__("Packages to buy:", "bc-recipe-calculator")}{" "}
                           {Math.ceil(
                             ingredient.totalAmount / ingredient.packageQuantity
@@ -260,23 +266,25 @@ function ShoppingList() {
                         </p>
                       )}
                       <div style={{ fontSize: "0.9em", color: "#666" }}>
-                        <p style={{ margin: "0 0 0.25rem 0" }}>
-                          {__("From recipes:", "bc-recipe-calculator")}
-                        </p>
-                        <ul
-                          style={{
-                            margin: "0 0 0.5rem 0",
-                            paddingLeft: "1.5rem",
-                          }}
-                        >
-                          {ingredient.recipes.map((recipe, recipeIndex) => (
-                            <li key={recipeIndex}>
-                              {recipe.recipeName} ({recipe.count}x) -{" "}
-                              {recipe.amount} {ingredient.unit} each ={" "}
-                              {recipe.total} {ingredient.unit}
-                            </li>
-                          ))}
-                        </ul>
+                        <details style={{ margin: "0 0 0.25rem 0" }}>
+                          <summary>
+                            {__("From recipes:", "bc-recipe-calculator")}
+                          </summary>
+                          <ul
+                            style={{
+                              margin: "0 0 0.5rem 0",
+                              paddingLeft: "1.5rem",
+                            }}
+                          >
+                            {ingredient.recipes.map((recipe, recipeIndex) => (
+                              <li key={recipeIndex}>
+                                {recipe.recipeName} ({recipe.count}x) -{" "}
+                                {recipe.amount} {ingredient.unit} each ={" "}
+                                {recipe.total} {ingredient.unit}
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
                       </div>
                     </div>
                   </Card>
