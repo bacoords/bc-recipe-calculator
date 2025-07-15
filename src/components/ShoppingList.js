@@ -244,50 +244,45 @@ function ShoppingList() {
                 }}
               >
                 {shoppingList.map((ingredient, index) => (
-                  <Card key={index} style={{ padding: "1rem" }}>
-                    <div>
-                      <h4 style={{ margin: "0 0 0.5rem 0" }}>
-                        {ingredient.name}
-                        {" - "}
-                        {ingredient.totalAmount} {ingredient.unit}
-                      </h4>
-                      {ingredient.packageQuantity > 0 && (
-                        <p
-                          style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}
+                  <div key={index}>
+                    <h4 style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}>
+                      {ingredient.name}
+                      {" - "}
+                      {ingredient.totalAmount} {ingredient.unit}
+                    </h4>
+                    {ingredient.packageQuantity > 0 && (
+                      <p style={{ margin: "0 0 0.5rem 0" }}>
+                        {Math.ceil(
+                          ingredient.totalAmount / ingredient.packageQuantity
+                        )}
+                        {__(" Package (", "bc-recipe-calculator")}
+                        {ingredient.packageQuantity} {ingredient.unit} per
+                        package at ${ingredient.packagePrice}
+                        {__(")", "bc-recipe-calculator")}
+                      </p>
+                    )}
+                    <div style={{ fontSize: "0.9em", color: "#666" }}>
+                      <details style={{ margin: "0 0 0.25rem 0" }}>
+                        <summary>
+                          {__("From recipes:", "bc-recipe-calculator")}
+                        </summary>
+                        <ul
+                          style={{
+                            margin: "0 0 0.5rem 0",
+                            paddingLeft: "1.5rem",
+                          }}
                         >
-                          {__("Packages to buy:", "bc-recipe-calculator")}{" "}
-                          {Math.ceil(
-                            ingredient.totalAmount / ingredient.packageQuantity
-                          )}
-                          {__(" (", "bc-recipe-calculator")}
-                          {ingredient.packageQuantity} {ingredient.unit} per
-                          package at ${ingredient.packagePrice}
-                          {__(")", "bc-recipe-calculator")}
-                        </p>
-                      )}
-                      <div style={{ fontSize: "0.9em", color: "#666" }}>
-                        <details style={{ margin: "0 0 0.25rem 0" }}>
-                          <summary>
-                            {__("From recipes:", "bc-recipe-calculator")}
-                          </summary>
-                          <ul
-                            style={{
-                              margin: "0 0 0.5rem 0",
-                              paddingLeft: "1.5rem",
-                            }}
-                          >
-                            {ingredient.recipes.map((recipe, recipeIndex) => (
-                              <li key={recipeIndex}>
-                                {recipe.recipeName} ({recipe.count}x) -{" "}
-                                {recipe.amount} {ingredient.unit} each ={" "}
-                                {recipe.total} {ingredient.unit}
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      </div>
+                          {ingredient.recipes.map((recipe, recipeIndex) => (
+                            <li key={recipeIndex}>
+                              {recipe.recipeName} ({recipe.count}x) -{" "}
+                              {recipe.amount} {ingredient.unit} each ={" "}
+                              {recipe.total} {ingredient.unit}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             ) : (
