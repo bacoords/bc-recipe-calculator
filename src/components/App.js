@@ -4,9 +4,10 @@ import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
 import { Icon, Button, Spinner, Flex } from "@wordpress/components";
-import { edit, trash, arrowLeft } from "@wordpress/icons";
+import { edit, trash, arrowLeft, list } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
+import ShoppingList from "./ShoppingList";
 import Header from "./Header";
 
 function App() {
@@ -26,24 +27,49 @@ function App() {
 
   // Get the post ID from URL parameters
   const [editingPostId, setEditingPostId] = useState(null);
+  const [currentView, setCurrentView] = useState("recipes"); // "recipes", "shopping", or "edit"
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("edit");
-    setEditingPostId(postId ? parseInt(postId) : null);
+    const view = urlParams.get("view");
+
+    if (postId) {
+      setEditingPostId(parseInt(postId));
+      setCurrentView("edit");
+    } else if (view === "shopping") {
+      setCurrentView("shopping");
+      setEditingPostId(null);
+    } else {
+      setCurrentView("recipes");
+      setEditingPostId(null);
+    }
   }, []);
 
   const navigateToEdit = (postId) => {
     const url = new URL(window.location);
     url.searchParams.set("edit", postId);
+    url.searchParams.delete("view");
     window.history.pushState({}, "", url);
     setEditingPostId(postId);
+    setCurrentView("edit");
   };
 
   const navigateToList = () => {
     const url = new URL(window.location);
     url.searchParams.delete("edit");
+    url.searchParams.delete("view");
     window.history.pushState({}, "", url);
+    setEditingPostId(null);
+    setCurrentView("recipes");
+  };
+
+  const navigateToShoppingList = () => {
+    const url = new URL(window.location);
+    url.searchParams.set("view", "shopping");
+    url.searchParams.delete("edit");
+    window.history.pushState({}, "", url);
+    setCurrentView("shopping");
     setEditingPostId(null);
   };
 
@@ -52,7 +78,18 @@ function App() {
     const handlePopState = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const postId = urlParams.get("edit");
-      setEditingPostId(postId ? parseInt(postId) : null);
+      const view = urlParams.get("view");
+
+      if (postId) {
+        setEditingPostId(parseInt(postId));
+        setCurrentView("edit");
+      } else if (view === "shopping") {
+        setCurrentView("shopping");
+        setEditingPostId(null);
+      } else {
+        setCurrentView("recipes");
+        setEditingPostId(null);
+      }
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -210,7 +247,7 @@ function App() {
   }
 
   // If we're editing a specific recipe, show the SingleRecipe component
-  if (editingPostId) {
+  if (currentView === "edit" && editingPostId) {
     return (
       <div>
         <Header>
@@ -226,10 +263,34 @@ function App() {
     );
   }
 
+  // If we're in shopping list view, show the ShoppingList component
+  if (currentView === "shopping") {
+    return (
+      <div>
+        <Header>
+          <Button onClick={navigateToList}>
+            <Icon icon={arrowLeft} />
+            Back to Recipes
+          </Button>
+        </Header>
+        <ShoppingList />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Header>
-        <CreateRecipeModal onRecipeCreated={handleRecipeCreated} />
+        <Flex gap={2} justify="flex-end">
+          <CreateRecipeModal onRecipeCreated={handleRecipeCreated} />
+          <Button
+            variant="secondary"
+            icon={<Icon icon={list} />}
+            onClick={navigateToShoppingList}
+          >
+            Shopping List
+          </Button>
+        </Flex>
       </Header>
       <div style={{ padding: "1rem" }}>
         <DataViews
