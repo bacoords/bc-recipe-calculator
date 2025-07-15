@@ -41,10 +41,11 @@ A WordPress plugin that provides a custom recipe management system with cost cal
 3. **Build the plugin**:
    ```bash
    npm run build
+   npm run plugin-zip
    ```
 
 4. **Activate the plugin**:
-   - Copy the entire `bc-recipe-calculator` folder to your WordPress `wp-content/plugins/` directory
+   - Upload the generated zip through the WordPress admin panel
    - Activate the plugin through the WordPress admin panel
 
 ## Development
@@ -62,6 +63,8 @@ bc-recipe-calculator/
 │       ├── App.js             # Main app component
 │       ├── SingleRecipe.js    # Recipe editor component
 │       ├── CreateRecipeModal.js    # New recipe modal
+│       ├── ShoppingList.js        # Shopping list component
+│       ├── Header.js              # Header component
 │       └── CreateIngredientModal.js # New ingredient modal
 └── build/                     # Compiled assets (gitignored)
 ```
