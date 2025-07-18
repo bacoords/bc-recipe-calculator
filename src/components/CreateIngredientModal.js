@@ -7,7 +7,12 @@ import {
   Flex,
 } from "@wordpress/components";
 
-function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
+function CreateIngredientModal({
+  isOpen,
+  onClose,
+  onIngredientCreated,
+  standalone = false,
+}) {
   const [newIngredient, setNewIngredient] = useState({
     name: "",
     price: "",
@@ -84,10 +89,16 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
       setNewIngredient({ name: "", price: "", quantity: "", unit: "" });
 
       // Close modal
-      onClose();
+      if (standalone) {
+        setIsModalOpen(false);
+      } else if (onClose) {
+        onClose();
+      }
 
       // Notify parent component
-      onIngredientCreated(createdIngredient);
+      if (onIngredientCreated) {
+        onIngredientCreated(createdIngredient);
+      }
     } catch (error) {
       console.error("Error creating ingredient:", error);
       setError("Failed to create ingredient");
@@ -100,10 +111,138 @@ function CreateIngredientModal({ isOpen, onClose, onIngredientCreated }) {
     if (!isCreatingIngredient) {
       setNewIngredient({ name: "", price: "", quantity: "", unit: "" });
       setError("");
-      onClose();
+      if (standalone) {
+        setIsModalOpen(false);
+      } else if (onClose) {
+        onClose();
+      }
     }
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpen = () => {
+    if (standalone) {
+      setIsModalOpen(true);
+    }
+  };
+
+  // If standalone, render as a button that opens the modal
+  if (standalone) {
+    return (
+      <>
+        <Button variant="primary" onClick={handleOpen}>
+          Add New Ingredient
+        </Button>
+
+        {isModalOpen && (
+          <Modal
+            title="Create New Ingredient"
+            onRequestClose={handleClose}
+            className="ingredient-modal"
+          >
+            <div className="modal-content">
+              <p
+                style={{
+                  margin: "0 0 16px 0",
+                  fontSize: "13px",
+                  color: "#646970",
+                }}
+              >
+                Create a new ingredient with pricing information. This will be
+                available for all recipes.
+              </p>
+
+              {error && (
+                <Notice status="error" isDismissible={false}>
+                  {error}
+                </Notice>
+              )}
+              <Flex gap="1rem" direction="column">
+                <TextControl
+                  label="Ingredient Name *"
+                  __nextHasNoMarginBottom
+                  value={newIngredient.name}
+                  onChange={(value) =>
+                    setNewIngredient({ ...newIngredient, name: value })
+                  }
+                  placeholder="e.g., All-purpose flour"
+                  required
+                />
+
+                <TextControl
+                  label="Price per Unit ($) *"
+                  __nextHasNoMarginBottom
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={newIngredient.price}
+                  onChange={(value) =>
+                    setNewIngredient({ ...newIngredient, price: value })
+                  }
+                  placeholder="0.00"
+                  required
+                />
+
+                <TextControl
+                  label="Default Quantity *"
+                  __nextHasNoMarginBottom
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={newIngredient.quantity}
+                  onChange={(value) =>
+                    setNewIngredient({ ...newIngredient, quantity: value })
+                  }
+                  placeholder="0"
+                  required
+                />
+
+                <TextControl
+                  label="Unit *"
+                  __nextHasNoMarginBottom
+                  value={newIngredient.unit}
+                  onChange={(value) =>
+                    setNewIngredient({ ...newIngredient, unit: value })
+                  }
+                  placeholder="e.g., grams, cups, oz"
+                  required
+                />
+                <Flex justify="flex-end" gap="1rem">
+                  <Button
+                    variant="secondary"
+                    onClick={handleClose}
+                    disabled={isCreatingIngredient}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={createNewIngredient}
+                    isBusy={isCreatingIngredient}
+                    disabled={
+                      !newIngredient.name.trim() ||
+                      !newIngredient.price.trim() ||
+                      !newIngredient.quantity.trim() ||
+                      !newIngredient.unit.trim() ||
+                      isNaN(parseFloat(newIngredient.price)) ||
+                      parseFloat(newIngredient.price) <= 0 ||
+                      isNaN(parseFloat(newIngredient.quantity)) ||
+                      parseFloat(newIngredient.quantity) <= 0
+                    }
+                  >
+                    {isCreatingIngredient ? "Creating..." : "Create Ingredient"}
+                  </Button>
+                </Flex>
+              </Flex>
+            </div>
+          </Modal>
+        )}
+      </>
+    );
+  }
+
+  // Modal version (existing functionality)
   return (
     isOpen && (
       <Modal
