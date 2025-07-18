@@ -14,8 +14,8 @@ import {
   CardBody,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { useDispatch, useSelect } from "@wordpress/data";
-import { store as coreDataStore } from "@wordpress/core-data";
+import { useDispatch } from "@wordpress/data";
+import { store as coreDataStore, useEntityRecord } from "@wordpress/core-data";
 import CreateIngredientModal from "./CreateIngredientModal";
 
 function SingleRecipe({ postId: propPostId }) {
@@ -25,7 +25,13 @@ function SingleRecipe({ postId: propPostId }) {
   // Get the save function from the data store
   const { saveEditedEntityRecord, editEntityRecord } =
     useDispatch(coreDataStore);
-  const { getEntityRecord } = useSelect((select) => select(coreDataStore), []);
+  
+  // Use useEntityRecord for proper data fetching
+  const { record: recipeData, hasResolved } = useEntityRecord(
+    "postType",
+    "bc_recipe",
+    postId
+  );
 
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState(1);
@@ -58,41 +64,27 @@ function SingleRecipe({ postId: propPostId }) {
     }
   }, [availableIngredients, ingredients]);
 
-  // Load recipe data on component mount
+  // Load recipe data when it becomes available
   useEffect(() => {
-    if (postId) {
-      loadRecipeData();
-    }
-  }, [postId]);
-
-  const loadRecipeData = async () => {
-    try {
-      const data = await getEntityRecord("postType", "bc_recipe", postId);
-      if (!data) {
-        throw new Error("Failed to load recipe data");
-      }
-      setServings(data.meta?.recipe_servings || 1);
-      const loadedIngredients = data.meta?.recipe_ingredients
-        ? JSON.parse(data.meta.recipe_ingredients)
+    if (hasResolved && recipeData) {
+      setServings(recipeData.meta?.recipe_servings || 1);
+      const loadedIngredients = recipeData.meta?.recipe_ingredients
+        ? JSON.parse(recipeData.meta.recipe_ingredients)
         : [];
       setIngredients(loadedIngredients);
-      setTitle(data.title?.rendered || data.title?.raw || "");
+      setTitle(recipeData.title?.rendered || recipeData.title?.raw || "");
       // Load saved cost values
-      setTotalCost(data.meta?.total_cost || 0);
-      setCostPerServing(data.meta?.cost_per_serving || 0);
+      setTotalCost(recipeData.meta?.total_cost || 0);
+      setCostPerServing(recipeData.meta?.cost_per_serving || 0);
 
       // Check for price changes after loading ingredients
       if (loadedIngredients.length > 0) {
         checkForPriceChanges(loadedIngredients);
       }
-    } catch (error) {
-      console.error("Error loading recipe data:", error);
-      // Don't show error for new recipes that don't have data yet
-      if (error.message !== "Failed to load recipe data") {
-        setError("Failed to load recipe data");
-      }
+    } else if (hasResolved && !recipeData) {
+      setError(__("Failed to load recipe data. Please try again."));
     }
-  };
+  }, [hasResolved, recipeData]);
 
   const checkForPriceChanges = async (recipeIngredients) => {
     if (!availableIngredients.length) return;
@@ -329,6 +321,16 @@ function SingleRecipe({ postId: propPostId }) {
     label: ingredient.name,
     value: ingredient.id.toString(),
   }));
+
+  // Show loading state while data is being fetched
+  if (!hasResolved) {
+    return (
+      <div className="bc-recipe-calculator" style={{ padding: "1rem", textAlign: "center" }}>
+        <Spinner />
+        <p>Loading recipe data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bc-recipe-calculator" style={{ padding: "1rem" }}>

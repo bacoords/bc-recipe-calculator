@@ -56,7 +56,7 @@ function App() {
     <div>
       <TabPanel
         tabs={tabs}
-        selectedTabId={currentView}
+        initialTabName={currentView}
         onSelect={handleTabSelect}
       >
         {({ content }) => <div>{content}</div>}

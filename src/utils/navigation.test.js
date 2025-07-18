@@ -44,11 +44,10 @@ export function testUrlParameterHandling() {
 }
 
 /**
- * Test the actual navigation hook behavior
- * This can be run in the browser console
+ * Test the simplified navigation hook behavior
  */
-export function testNavigationHook() {
-  console.log("🧪 Testing navigation hook behavior...");
+export function testSimplifiedNavigation() {
+  console.log("🧪 Testing simplified navigation...");
 
   // Test URL changes
   const testUrls = [
@@ -62,53 +61,33 @@ export function testNavigationHook() {
 
   testUrls.forEach((url, index) => {
     console.log(`\n🔗 Test URL ${index + 1}: ${url}`);
-
-    // Simulate changing the URL
-    const newUrl = window.location.origin + window.location.pathname + url;
-    window.history.pushState({}, "", newUrl);
-
-    // Trigger a popstate event to test the navigation hook
-    window.dispatchEvent(new PopStateEvent("popstate"));
-
-    console.log("URL changed, check if the correct view is displayed");
+    console.log("Navigate to this URL and verify the correct view loads");
   });
+
+  console.log("\n📝 Instructions:");
+  console.log("1. Navigate to each URL above");
+  console.log("2. Verify the correct tab is selected");
+  console.log("3. Verify the correct content is displayed");
+  console.log("4. Test browser back/forward buttons");
 }
 
 /**
- * Specific test for the shopping view issue
+ * Debug current navigation state
  */
-export function testShoppingViewFix() {
-  console.log("🧪 Testing shopping view fix...");
+export function debugNavigationState() {
+  console.log("🔍 Current navigation state:");
+  console.log("URL:", window.location.href);
+  console.log("Search params:", window.location.search);
 
-  // Test the specific scenario that was failing
-  const shoppingUrl = "?view=shopping";
-  console.log(`Testing URL: ${shoppingUrl}`);
-
-  const result = parseUrlParamsForTesting(shoppingUrl);
-  const expected = {
-    currentView: "shopping",
-    editingPostId: null,
-    editingTermId: null,
-  };
-
-  const passed = JSON.stringify(result) === JSON.stringify(expected);
-
-  if (passed) {
-    console.log("✅ Shopping view URL parsing works correctly");
-  } else {
-    console.log("❌ Shopping view URL parsing failed");
-    console.log("Expected:", expected);
-    console.log("Got:", result);
-  }
-
-  // Test that the URL doesn't redirect to recipes
-  console.log("\n🔗 Testing that shopping view stays on shopping...");
-  console.log("Navigate to ?view=shopping and verify it stays on shopping tab");
+  const urlParams = new URLSearchParams(window.location.search);
+  console.log("view param:", urlParams.get("view"));
+  console.log("edit param:", urlParams.get("edit"));
+  console.log("edit_ingredient param:", urlParams.get("edit_ingredient"));
 }
 
 // Export for use in browser console
 if (typeof window !== "undefined") {
   window.testUrlParameterHandling = testUrlParameterHandling;
-  window.testNavigationHook = testNavigationHook;
-  window.testShoppingViewFix = testShoppingViewFix;
+  window.testSimplifiedNavigation = testSimplifiedNavigation;
+  window.debugNavigationState = debugNavigationState;
 }
