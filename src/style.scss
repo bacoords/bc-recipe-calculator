@@ -1,146 +1,150 @@
 @import "@wordpress/dataviews/build-style/style.css";
-
-// WordPress Admin Theme Integration
-.bc-recipe-calculator {
-	> * + * {
-		margin-top: 1rem;
-	}
-
-	.saving-indicator {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-top: 12px;
-		padding: 8px 12px;
-		border-radius: 4px;
-		font-size: 13px;
-		font-weight: 500;
-
-		.components-spinner {
-			margin: 0;
-		}
-	}
-
-	.saved-indicator {
-		margin-top: 12px;
-		padding: 8px 12px;
-		border-radius: 4px;
-		font-size: 13px;
-		font-weight: 500;
-
-		.auto-save-note {
-			margin-left: 8px;
-			opacity: 0.7;
-			font-size: 12px;
-		}
-	}
-
-	.checking-prices {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-top: 12px;
-		padding: 8px 12px;
-		border-radius: 4px;
-		font-size: 13px;
-		font-weight: 500;
-		color: #646970;
-		background: #f6f7f7;
-	}
-
-	.price-changes-warning {
-		h4 {
-			margin: 0 0 8px 0;
-			font-size: 14px;
-			font-weight: 600;
+#bc-recipe-calculator {
+	// WordPress Admin Theme Integration
+	.bc-recipe-calculator {
+		> * + * {
+			margin-top: 1rem;
 		}
 
-		ul {
-			margin: 8px 0;
-			padding-left: 20px;
-		}
-
-		li {
-			margin-bottom: 4px;
+		.saving-indicator {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 12px;
+			padding: 8px 12px;
+			border-radius: 4px;
 			font-size: 13px;
-		}
-
-		.unit-price-change {
-			color: #d63638;
 			font-weight: 500;
+
+			.components-spinner {
+				margin: 0;
+			}
 		}
 
-		p {
-			margin: 8px 0 0 0;
-			font-size: 12px;
-			font-style: italic;
-		}
-	}
+		.saved-indicator {
+			margin-top: 12px;
+			padding: 8px 12px;
+			border-radius: 4px;
+			font-size: 13px;
+			font-weight: 500;
 
-	.ingredient-actions {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-end;
-		gap: 8px;
-	}
-
-	.no-ingredients {
-		text-align: center;
-		padding: 40px 20px;
-		color: #646970;
-		background: #f6f7f7;
-		border-radius: 4px;
-
-		p {
-			margin: 0;
-			font-size: 14px;
-		}
-	}
-
-	.loading-ingredients {
-		text-align: center;
-		padding: 40px 20px;
-		color: #646970;
-		background: #f6f7f7;
-		border-radius: 4px;
-
-		p {
-			margin: 8px 0 0 0;
-			font-size: 14px;
-		}
-	}
-
-	.cost-value {
-		&.total {
-			font-size: 18px;
-			font-weight: 700;
-			color: #2271b1;
+			.auto-save-note {
+				margin-left: 8px;
+				opacity: 0.7;
+				font-size: 12px;
+			}
 		}
 
-		&.per-serving {
-			font-size: 18px;
-			font-weight: 700;
-			color: #2271b1;
+		.checking-prices {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 12px;
+			padding: 8px 12px;
+			border-radius: 4px;
+			font-size: 13px;
+			font-weight: 500;
+			color: #646970;
+			background: #f6f7f7;
+		}
+
+		.price-changes-warning {
+			h4 {
+				margin: 0 0 8px 0;
+				font-size: 14px;
+				font-weight: 600;
+			}
+
+			ul {
+				margin: 8px 0;
+				padding-left: 20px;
+			}
+
+			li {
+				margin-bottom: 4px;
+				font-size: 13px;
+			}
+
+			.unit-price-change {
+				color: #d63638;
+				font-weight: 500;
+			}
+
+			p {
+				margin: 8px 0 0 0;
+				font-size: 12px;
+				font-style: italic;
+			}
+		}
+
+		.ingredient-actions {
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-end;
+			gap: 8px;
+		}
+
+		.no-ingredients {
+			text-align: center;
+			padding: 40px 20px;
+			color: #646970;
+			background: #f6f7f7;
+			border-radius: 4px;
+
+			p {
+				margin: 0;
+				font-size: 14px;
+			}
+		}
+
+		.loading-ingredients {
+			text-align: center;
+			padding: 40px 20px;
+			color: #646970;
+			background: #f6f7f7;
+			border-radius: 4px;
+
+			p {
+				margin: 8px 0 0 0;
+				font-size: 14px;
+			}
+		}
+
+		.cost-value {
+			&.total {
+				font-size: 18px;
+				font-weight: 700;
+				color: #2271b1;
+			}
+
+			&.per-serving {
+				font-size: 18px;
+				font-weight: 700;
+				color: #2271b1;
+			}
+		}
+
+		@media (max-width: 768px) {
+			.recipe-title-servings,
+			.grid-ingredient {
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+			.recipe-title {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 1rem;
+			}
 		}
 	}
 
 	@media (max-width: 768px) {
-		.recipe-title-servings,
-		.grid-ingredient {
+		.shopping-list-grid {
 			grid-template-columns: 1fr;
-			gap: 1rem;
-		}
-		.recipe-title {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
 		}
 	}
-}
-
-@media (max-width: 768px) {
-	#bc-recipe-calculator .shopping-list-grid {
-		grid-template-columns: 1fr;
+	.components-tab-panel__tabs {
+		border-bottom: 1px solid #e0e0e0;
 	}
 }
 #wpwrap {

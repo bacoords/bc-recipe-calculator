@@ -151,7 +151,9 @@ function ShoppingList() {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2>{__("Shopping List", "bc-recipe-calculator")}</h2>
+      <h1 style={{ marginBottom: "1rem" }}>
+        {__("Shopping List", "bc-recipe-calculator")}
+      </h1>
 
       <Grid columns={2} gap={4} className="shopping-list-grid">
         {/* Recipe Selection */}

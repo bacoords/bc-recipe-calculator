@@ -331,7 +331,7 @@ function SingleRecipe({ postId: propPostId }) {
   }));
 
   return (
-    <div className="bc-recipe-calculator">
+    <div className="bc-recipe-calculator" style={{ padding: "1rem" }}>
       {isSaving && (
         <Notice status="info" isDismissible={false}>
           <div className="saving-indicator">

@@ -6,8 +6,6 @@ function Header({ children }) {
     <div
       style={{
         padding: "1rem",
-        marginBottom: "1rem",
-        borderBottom: "1px solid #e0e0e0",
       }}
     >
       <Flex

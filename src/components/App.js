@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "@wordpress/element";
 import { DataViews } from "@wordpress/dataviews/wp";
 import { useEntityRecords } from "@wordpress/core-data";
 import { useDispatch, useSelect } from "@wordpress/data";
 import { store as coreDataStore } from "@wordpress/core-data";
-import { Icon, Button, Spinner, Flex } from "@wordpress/components";
-import { edit, trash, arrowLeft, list } from "@wordpress/icons";
+import { Icon, Button, Spinner, Flex, TabPanel } from "@wordpress/components";
+import { edit, trash, list } from "@wordpress/icons";
 import SingleRecipe from "./SingleRecipe";
 import CreateRecipeModal from "./CreateRecipeModal";
 import ShoppingList from "./ShoppingList";
@@ -25,10 +25,11 @@ function App() {
     fields: ["total_cost", "cost_per_serving"],
   });
 
-  // Get the post ID from URL parameters
+  // State for managing the current view
+  const [currentView, setCurrentView] = useState("recipes"); // "recipes" or "shopping"
   const [editingPostId, setEditingPostId] = useState(null);
-  const [currentView, setCurrentView] = useState("recipes"); // "recipes", "shopping", or "edit"
 
+  // Initialize from URL parameters on load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("edit");
@@ -36,7 +37,7 @@ function App() {
 
     if (postId) {
       setEditingPostId(parseInt(postId));
-      setCurrentView("edit");
+      setCurrentView("recipes");
     } else if (view === "shopping") {
       setCurrentView("shopping");
       setEditingPostId(null);
@@ -45,33 +46,6 @@ function App() {
       setEditingPostId(null);
     }
   }, []);
-
-  const navigateToEdit = (postId) => {
-    const url = new URL(window.location);
-    url.searchParams.set("edit", postId);
-    url.searchParams.delete("view");
-    window.history.pushState({}, "", url);
-    setEditingPostId(postId);
-    setCurrentView("edit");
-  };
-
-  const navigateToList = () => {
-    const url = new URL(window.location);
-    url.searchParams.delete("edit");
-    url.searchParams.delete("view");
-    window.history.pushState({}, "", url);
-    setEditingPostId(null);
-    setCurrentView("recipes");
-  };
-
-  const navigateToShoppingList = () => {
-    const url = new URL(window.location);
-    url.searchParams.set("view", "shopping");
-    url.searchParams.delete("edit");
-    window.history.pushState({}, "", url);
-    setCurrentView("shopping");
-    setEditingPostId(null);
-  };
 
   // Listen for browser back/forward buttons
   useEffect(() => {
@@ -82,7 +56,7 @@ function App() {
 
       if (postId) {
         setEditingPostId(parseInt(postId));
-        setCurrentView("edit");
+        setCurrentView("recipes");
       } else if (view === "shopping") {
         setCurrentView("shopping");
         setEditingPostId(null);
@@ -122,6 +96,45 @@ function App() {
 
   const handleRecipeCreated = (newRecipe) => {
     navigateToEdit(newRecipe.id);
+  };
+
+  const navigateToEdit = (postId) => {
+    const url = new URL(window.location);
+    url.searchParams.set("edit", postId);
+    url.searchParams.delete("view");
+    window.history.pushState({}, "", url);
+    setEditingPostId(postId);
+    setCurrentView("recipes");
+  };
+
+  const navigateToList = () => {
+    const url = new URL(window.location);
+    url.searchParams.delete("edit");
+    url.searchParams.delete("view");
+    window.history.pushState({}, "", url);
+    setEditingPostId(null);
+    setCurrentView("recipes");
+  };
+
+  const navigateToShoppingList = () => {
+    const url = new URL(window.location);
+    url.searchParams.set("view", "shopping");
+    url.searchParams.delete("edit");
+    window.history.pushState({}, "", url);
+    setCurrentView("shopping");
+    setEditingPostId(null);
+  };
+
+  const handleTabSelect = (tabName) => {
+    setCurrentView(tabName);
+    if (tabName === "shopping") {
+      navigateToShoppingList();
+    } else {
+      // Only navigate to list if we're not currently editing a recipe
+      if (!editingPostId) {
+        navigateToList();
+      }
+    }
   };
 
   const fields = [
@@ -246,68 +259,62 @@ function App() {
     );
   }
 
-  // If we're editing a specific recipe, show the SingleRecipe component
-  if (currentView === "edit" && editingPostId) {
-    return (
-      <div>
-        <Header>
-          <Button onClick={navigateToList}>
-            <Icon icon={arrowLeft} />
-            Back to Recipes
-          </Button>
-        </Header>
-        <div style={{ padding: "1rem" }}>
-          <SingleRecipe postId={editingPostId} />
-        </div>
-      </div>
-    );
-  }
-
-  // If we're in shopping list view, show the ShoppingList component
-  if (currentView === "shopping") {
-    return (
-      <div>
-        <Header>
-          <Button onClick={navigateToList}>
-            <Icon icon={arrowLeft} />
-            Back to Recipes
-          </Button>
-        </Header>
-        <ShoppingList />
-      </div>
-    );
-  }
-
   return (
     <div>
-      <Header>
-        <Flex gap={2} justify="flex-end">
-          <CreateRecipeModal onRecipeCreated={handleRecipeCreated} />
-          <Button
-            variant="secondary"
-            icon={<Icon icon={list} />}
-            onClick={navigateToShoppingList}
-          >
-            Shopping List
-          </Button>
-        </Flex>
-      </Header>
-      <div style={{ padding: "1rem" }}>
-        <DataViews
-          type="table"
-          data={records || []}
-          fields={fields}
-          view={view}
-          onChangeView={setView}
-          actions={actions}
-          paginationInfo={{
-            totalItems: records?.length || 0,
-            totalPages: Math.ceil((records?.length || 0) / view.perPage),
-          }}
-          search={true}
-          searchLabel="Search recipes..."
-        />
-      </div>
+      <TabPanel
+        tabs={[
+          {
+            name: "recipes",
+            title: "Recipes",
+            content:
+              // If we're editing a specific recipe, show the SingleRecipe component
+              editingPostId ? (
+                <div>
+                  <div style={{ marginBottom: "1rem", padding: "1rem" }}>
+                    <Button onClick={navigateToList}>← Back to Recipes</Button>
+                  </div>
+                  <SingleRecipe postId={editingPostId} />
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: "1rem", padding: "1rem" }}>
+                    <Flex gap={2} justify="space-between">
+                      <h1>Recipes</h1>
+                      <CreateRecipeModal
+                        onRecipeCreated={handleRecipeCreated}
+                      />
+                    </Flex>
+                  </div>
+                  <DataViews
+                    type="table"
+                    data={records || []}
+                    fields={fields}
+                    view={view}
+                    onChangeView={setView}
+                    actions={actions}
+                    paginationInfo={{
+                      totalItems: records?.length || 0,
+                      totalPages: Math.ceil(
+                        (records?.length || 0) / view.perPage
+                      ),
+                    }}
+                    search={true}
+                    searchLabel="Search recipes..."
+                  />
+                </>
+              ),
+          },
+          {
+            name: "shopping",
+            title: "Shopping List",
+            content: <ShoppingList />,
+          },
+        ]}
+        selectedTabId={currentView}
+        onSelect={handleTabSelect}
+      >
+        {({ content }) => <div>{content}</div>}
+      </TabPanel>
     </div>
   );
 }
