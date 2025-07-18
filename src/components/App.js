@@ -38,7 +38,7 @@ function App() {
     search: "",
     filters: [],
     titleField: "name",
-    fields: ["name", "price", "quantity", "unit"],
+    fields: ["price", "quantity", "unit"],
   });
 
   // State for managing the current view
@@ -368,7 +368,6 @@ function App() {
       header: "Price ($)",
       getValue: (item) => item.meta?.ingredient_price || 0,
       render: ({ item }) => {
-        console.log(item);
         const price = item.meta?.ingredient_price || 0;
         return `$${parseFloat(price).toFixed(2)}`;
       },

@@ -166,6 +166,7 @@ function CreateIngredientModal({
                   onChange={(value) =>
                     setNewIngredient({ ...newIngredient, name: value })
                   }
+                  __next40pxDefaultSize
                   placeholder="e.g., All-purpose flour"
                   required
                 />
@@ -180,6 +181,7 @@ function CreateIngredientModal({
                   onChange={(value) =>
                     setNewIngredient({ ...newIngredient, price: value })
                   }
+                  __next40pxDefaultSize
                   placeholder="0.00"
                   required
                 />
@@ -194,6 +196,7 @@ function CreateIngredientModal({
                   onChange={(value) =>
                     setNewIngredient({ ...newIngredient, quantity: value })
                   }
+                  __next40pxDefaultSize
                   placeholder="0"
                   required
                 />
@@ -205,6 +208,7 @@ function CreateIngredientModal({
                   onChange={(value) =>
                     setNewIngredient({ ...newIngredient, unit: value })
                   }
+                  __next40pxDefaultSize
                   placeholder="e.g., grams, cups, oz"
                   required
                 />
@@ -275,6 +279,7 @@ function CreateIngredientModal({
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, name: value })
               }
+              __next40pxDefaultSize
               placeholder="e.g., All-purpose flour"
               required
             />
@@ -289,6 +294,7 @@ function CreateIngredientModal({
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, price: value })
               }
+              __next40pxDefaultSize
               placeholder="0.00"
               required
             />
@@ -303,6 +309,7 @@ function CreateIngredientModal({
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, quantity: value })
               }
+              __next40pxDefaultSize
               placeholder="0"
               required
             />
@@ -314,6 +321,7 @@ function CreateIngredientModal({
               onChange={(value) =>
                 setNewIngredient({ ...newIngredient, unit: value })
               }
+              __next40pxDefaultSize
               placeholder="e.g., grams, cups, oz"
               required
             />
