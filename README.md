@@ -12,6 +12,15 @@ A WordPress plugin that provides a custom recipe management system with cost cal
 - **Price Tracking**: Tracks ingredient price changes and alerts users
 - **Serving Calculator**: Calculate cost per serving based on recipe yield
 
+## Screenshots
+
+<img width="1446" height="933" alt="Screenshot 2025-07-19 at 8 51 55 AM" src="https://github.com/user-attachments/assets/8dc92490-4f81-4ebc-ba65-6c37d25e235d" />
+<img width="1442" height="930" alt="Screenshot 2025-07-19 at 8 52 13 AM" src="https://github.com/user-attachments/assets/13634656-ade1-4aaf-be0b-f3a9b8e7ff5b" />
+<img width="1444" height="931" alt="Screenshot 2025-07-19 at 8 52 27 AM" src="https://github.com/user-attachments/assets/e61647a2-14ce-49d3-acd1-77dfe4e14be2" />
+<img width="1443" height="930" alt="Screenshot 2025-07-19 at 8 52 40 AM" src="https://github.com/user-attachments/assets/0b80d8a8-355e-4a9b-88e4-e0164b0c73d5" />
+<img width="1444" height="933" alt="Screenshot 2025-07-19 at 8 52 56 AM" src="https://github.com/user-attachments/assets/70d27b59-a60f-4632-956b-9d39bc254e48" />
+
+
 ### To Dos
 
 - Import/Export
