@@ -68,14 +68,38 @@ bc-recipe-calculator/
 ├── src/
 │   ├── index.js               # Main React entry point
 │   ├── style.scss             # Styles
-│   └── components/
-│       ├── App.js             # Main app component
-│       ├── SingleRecipe.js    # Recipe editor component
-│       ├── CreateRecipeModal.js    # New recipe modal
-│       ├── ShoppingList.js        # Shopping list component
-│       ├── Header.js              # Header component
-│       └── CreateIngredientModal.js # New ingredient modal
+│   ├── components/
+│   │   ├── App.js             # Main app component
+│   │   ├── Header.js          # Header component
+│   │   ├── SingleRecipe.js    # Recipe editor component
+│   │   ├── SingleIngredient.js # Ingredient editor component
+│   │   ├── CreateRecipeModal.js    # New recipe modal
+│   │   ├── CreateIngredientModal.js # New ingredient modal
+│   │   ├── ShoppingList.js    # Shopping list component
+│   │   └── views/
+│   │       ├── RecipesView.js      # Recipes list view
+│   │       ├── IngredientsView.js  # Ingredients list view
+│   │       └── ShoppingListView.js # Shopping list view
+│   ├── config/
+│   │   ├── recipeActions.js   # Recipe CRUD actions
+│   │   ├── recipeFields.js    # Recipe form fields config
+│   │   ├── ingredientActions.js # Ingredient CRUD actions
+│   │   └── ingredientFields.js  # Ingredient form fields config
+│   ├── constants/
+│   │   └── navigation.js      # Navigation constants
+│   ├── hooks/
+│   │   ├── useRecipes.js      # Recipe data hook
+│   │   ├── useIngredients.js  # Ingredient data hook
+│   │   ├── useNavigation.js   # Navigation hook
+│   │   └── useViewState.js    # View state management hook
+│   └── utils/
+│       ├── navigation.js      # Navigation utilities
+│       └── navigation.test.js # Navigation tests
 └── build/                     # Compiled assets (gitignored)
+    ├── index.js               # Compiled JavaScript
+    ├── index.asset.php        # Asset dependencies
+    ├── style-index.css        # Compiled styles
+    └── style-index-rtl.css    # RTL compiled styles
 ```
 
 ### Development Commands
@@ -104,118 +128,6 @@ The plugin creates:
   - Custom meta fields for pricing information
   - REST API enabled
 
-### Key Components
-
-#### SingleRecipe.js
-Main recipe editor component that handles:
-- Recipe title and serving count
-- Ingredient selection from taxonomy
-- Cost calculation based on ingredient prices
-- Price change detection and alerts
-- Recipe saving via REST API
-
-#### CreateIngredientModal.js
-Modal for creating new ingredients with:
-- Ingredient name input
-- Price and quantity fields
-- Unit selection
-- Taxonomy term creation
-
-#### App.js
-Main application component that manages:
-- Recipe listing and navigation
-- Modal state management
-- Data fetching and caching
-
-## Usage
-
-### Creating Ingredients
-
-1. Navigate to **Recipes > Ingredients** in the WordPress admin
-2. Click **Add New Ingredient**
-3. Fill in:
-   - **Name**: Ingredient name (e.g., "All-Purpose Flour")
-   - **Price**: Cost of the package
-   - **Quantity**: Amount in the package
-   - **Unit**: Unit of measurement (e.g., "cups", "grams")
-
-### Creating Recipes
-
-1. Navigate to **Recipes** in the WordPress admin
-2. Click **Add New Recipe**
-3. Fill in:
-   - **Recipe Title**: Name of the recipe
-   - **Number of Servings**: How many people the recipe serves
-   - **Ingredients**: Select ingredients from the dropdown and specify amounts used
-
-### Cost Calculation
-
-The plugin automatically calculates:
-- **Total Recipe Cost**: Sum of all ingredient costs
-- **Cost per Serving**: Total cost divided by number of servings
-- **Ingredient Costs**: Based on price per unit × amount used
-
-### Price Change Detection
-
-The plugin tracks ingredient price changes and alerts users when:
-- Ingredient prices have been updated
-- Package quantities have changed
-- Unit prices have been modified
-
-## API Endpoints
-
-### Recipes
-- `GET /wp-json/wp/v2/bc_recipe` - List recipes
-- `GET /wp-json/wp/v2/bc_recipe/{id}` - Get single recipe
-- `POST /wp-json/wp/v2/bc_recipe` - Create recipe
-- `POST /wp-json/wp/v2/bc_recipe/{id}` - Update recipe
-
-### Ingredients
-- `GET /wp-json/wp/v2/bc_ingredient` - List ingredients
-- `GET /wp-json/wp/v2/bc_ingredient/{id}` - Get single ingredient
-- `POST /wp-json/wp/v2/bc_ingredient` - Create ingredient
-- `POST /wp-json/wp/v2/bc_ingredient/{id}` - Update ingredient
-
-## Customization
-
-### Adding Custom Fields
-
-To add custom fields to recipes or ingredients, modify the respective registration functions in `bc-recipe-calculator.php`:
-
-```php
-// For recipes
-register_post_meta('bc_recipe', 'custom_field', array(
-    'show_in_rest' => true,
-    'single' => true,
-    'type' => 'string',
-));
-
-// For ingredients
-add_term_meta('bc_ingredient', 'custom_field', 'value');
-```
-
-### Styling
-
-Custom styles can be added to `src/style.scss`. The build process will compile this to CSS.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Build files not updating**: Run `npm run build` to regenerate build files
-2. **REST API errors**: Ensure WordPress REST API is enabled and accessible
-3. **Permission errors**: Check that the plugin has proper WordPress permissions
-
-### Debug Mode
-
-Enable WordPress debug mode to see detailed error messages:
-
-```php
-// In wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-```
-
 ## Contributing
 
 1. Fork the repository
@@ -228,7 +140,7 @@ define('WP_DEBUG_LOG', true);
 
 ## License
 
-This project is licensed under the GPL v2 or later - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL v2 or later.
 
 ## Support
 
@@ -236,4 +148,4 @@ For support and questions, please open an issue on GitHub or contact the develop
 
 ---
 
-**Note**: This plugin requires WordPress 5.0+ and PHP 7.4+ for optimal functionality. 
+**Note**: This plugin requires WordPress 6.8+ and PHP 7.4+ for optimal functionality. 
