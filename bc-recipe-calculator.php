@@ -551,3 +551,5 @@ class BCRecipeCalculator {
 
 // Initialize the plugin.
 new BCRecipeCalculator();
+
+require_once 'includes/abilities.php';
