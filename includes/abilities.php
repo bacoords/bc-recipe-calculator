@@ -5,34 +5,12 @@
 
 namespace BCRecipeCalculator\Abilities;
 
-use WP\MCP\Core\McpAdapter;
-
-// Hook into the MCP adapter initialization
-add_action( 'mcp_adapter_init', function( $adapter ) {
-    $adapter->create_server(
-        'bc-recipe-calculator-server',                          // Unique server ID
-        'bc-recipe-calculator',                                // REST API namespace
-        'mcp',                                      // REST API route
-        'Recipe MCP Server',                      // Human-readable name
-        'A simple MCP server for demonstration',    // Description
-        '1.0.0',                                    // Version
-        [                                           // Transport methods
-            \WP\MCP\Transport\Http\RestTransport::class,
-        ],
-        \WP\MCP\Infrastructure\ErrorHandling\ErrorLogMcpErrorHandler::class, // Error handler
-        \WP\MCP\Infrastructure\Observability\NullMcpObservabilityHandler::class, // Error handler
-        [                                           // Abilities to expose as tools
-            'bc-recipe-calculator/get-recipes',
-            'bc-recipe-calculator/get-ingredients',
-            'bc-recipe-calculator/create-ingredient'
-        ],
-        [],
-        [],
-        function(): bool {  // Permission callback
-            return current_user_can('manage_options');
-        }
-    );
-});
+add_filter( 'woocommerce_mcp_include_ability', function( $include, $ability_id ) {
+    if ( str_starts_with( $ability_id, 'bc-recipe-calculator/' ) ) {
+        return true;
+    }
+    return $include;
+}, 10, 2 );
 
 // Register a simple ability to get site information
 add_action('abilities_api_init', function () {
