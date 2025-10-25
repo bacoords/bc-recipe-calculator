@@ -1,6 +1,3 @@
-import { Icon } from "@wordpress/components";
-import { edit } from "@wordpress/icons";
-
 /**
  * Recipe fields configuration for DataViews
  */
@@ -54,6 +51,17 @@ export const recipeFields = (navigateToEdit) => [
     render: ({ item }) => {
       const cost = item.meta?.cost_per_serving || 0;
       return `$${cost.toFixed(2)}`;
+    },
+  },
+  {
+    id: "recipe_servings",
+    type: "number",
+    label: "Servings",
+    header: "Servings",
+    getValue: (item) => item.meta?.recipe_servings || 0,
+    render: ({ item }) => {
+      const servings = item.meta?.recipe_servings || 0;
+      return servings;
     },
   },
 ];

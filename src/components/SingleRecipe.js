@@ -8,8 +8,6 @@ import {
   Card,
   CardHeader,
   Flex,
-  FlexItem,
-  FlexBlock,
   __experimentalGrid as Grid,
   CardBody,
 } from "@wordpress/components";
@@ -25,7 +23,7 @@ function SingleRecipe({ postId: propPostId }) {
   // Get the save function from the data store
   const { saveEditedEntityRecord, editEntityRecord } =
     useDispatch(coreDataStore);
-  
+
   // Use useEntityRecord for proper data fetching
   const { record: recipeData, hasResolved } = useEntityRecord(
     "postType",
@@ -325,7 +323,10 @@ function SingleRecipe({ postId: propPostId }) {
   // Show loading state while data is being fetched
   if (!hasResolved) {
     return (
-      <div className="bc-recipe-calculator" style={{ padding: "1rem", textAlign: "center" }}>
+      <div
+        className="bc-recipe-calculator"
+        style={{ padding: "1rem", textAlign: "center" }}
+      >
         <Spinner />
         <p>Loading recipe data...</p>
       </div>
