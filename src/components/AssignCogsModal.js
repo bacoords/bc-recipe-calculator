@@ -5,68 +5,80 @@ import {
   Modal,
   Notice,
   Flex,
-  SelectControl,
   Spinner,
   Card,
   CardBody,
+  ComboboxControl,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
 function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
-  const [products, setProducts] = useState([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState("");
-  const [selectedVariationId, setSelectedVariationId] = useState("");
-  const [variations, setVariations] = useState([]);
-  const [isLoadingVariations, setIsLoadingVariations] = useState(false);
+  const [productSearchResults, setProductSearchResults] = useState([]);
+  const [isSearchingProducts, setIsSearchingProducts] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [variationSearchResults, setVariationSearchResults] = useState([]);
+  const [isSearchingVariations, setIsSearchingVariations] = useState(false);
+  const [selectedVariation, setSelectedVariation] = useState(null);
   const [currentCogs, setCurrentCogs] = useState(null);
   const [newCogsValue, setNewCogsValue] = useState(totalCost.toFixed(2));
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch products when modal opens
+  // Reset new COGS value when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetchProducts();
-      // Reset new COGS value to total cost when modal opens
       setNewCogsValue(totalCost.toFixed(2));
     }
   }, [isOpen, totalCost]);
 
   // Fetch variations when a variable product is selected
   useEffect(() => {
-    if (selectedProductId) {
-      const product = products.find((p) => p.id === parseInt(selectedProductId));
-      if (product && product.type === "variable") {
-        fetchVariations(selectedProductId);
-        setSelectedVariationId("");
+    if (selectedProduct) {
+      if (selectedProduct.type === "variable") {
+        searchVariations("");
+        setSelectedVariation(null);
         setCurrentCogs(null);
-      } else if (product) {
+      } else {
         // Simple product selected
-        setVariations([]);
-        setSelectedVariationId("");
-        fetchCurrentCogs(selectedProductId, null);
+        setVariationSearchResults([]);
+        setSelectedVariation(null);
+        fetchCurrentCogs(selectedProduct.id, null);
       }
     } else {
-      setVariations([]);
-      setSelectedVariationId("");
+      setVariationSearchResults([]);
+      setSelectedVariation(null);
       setCurrentCogs(null);
     }
-  }, [selectedProductId, products]);
+  }, [selectedProduct]);
 
   // Fetch current COGS when variation is selected
   useEffect(() => {
-    if (selectedVariationId && selectedProductId) {
-      fetchCurrentCogs(selectedProductId, selectedVariationId);
+    if (selectedVariation && selectedProduct) {
+      fetchCurrentCogs(selectedProduct.id, selectedVariation.id);
     }
-  }, [selectedVariationId, selectedProductId]);
+  }, [selectedVariation, selectedProduct]);
 
-  const fetchProducts = async () => {
+  const searchProducts = async (searchTerm) => {
+    // Don't search until at least 3 characters are typed
+    if (!searchTerm || searchTerm.trim().length < 3) {
+      setProductSearchResults([]);
+      return;
+    }
+
     try {
-      setIsLoadingProducts(true);
+      setIsSearchingProducts(true);
       setError("");
-      const response = await fetch("/wp-json/wc/v3/products?per_page=100", {
+
+      // Build the search query
+      const params = new URLSearchParams({
+        per_page: "50",
+        orderby: "title",
+        order: "asc",
+        search: searchTerm,
+      });
+
+      const response = await fetch(`/wp-json/wc/v3/products?${params}`, {
         headers: {
           "X-WP-Nonce": wpApiSettings.nonce,
         },
@@ -77,22 +89,24 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
       }
 
       const productsData = await response.json();
-      setProducts(productsData);
+      setProductSearchResults(productsData);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error searching products:", error);
       setError(
         "Failed to load WooCommerce products. Make sure WooCommerce is installed and activated."
       );
     } finally {
-      setIsLoadingProducts(false);
+      setIsSearchingProducts(false);
     }
   };
 
-  const fetchVariations = async (productId) => {
+  const searchVariations = async (searchTerm) => {
+    if (!selectedProduct) return;
+
     try {
-      setIsLoadingVariations(true);
+      setIsSearchingVariations(true);
       const response = await fetch(
-        `/wp-json/wc/v3/products/${productId}/variations?per_page=100`,
+        `/wp-json/wc/v3/products/${selectedProduct.id}/variations?per_page=100`,
         {
           headers: {
             "X-WP-Nonce": wpApiSettings.nonce,
@@ -104,13 +118,26 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
         throw new Error("Failed to fetch variations");
       }
 
-      const variationsData = await response.json();
-      setVariations(variationsData);
+      let variationsData = await response.json();
+
+      // Filter variations by search term if provided (minimum 3 characters)
+      if (searchTerm && searchTerm.trim() && searchTerm.trim().length >= 3) {
+        const term = searchTerm.toLowerCase();
+        variationsData = variationsData.filter((variation) => {
+          const variationLabel = variation.attributes
+            .map((attr) => `${attr.name}: ${attr.option}`)
+            .join(", ")
+            .toLowerCase();
+          return variationLabel.includes(term);
+        });
+      }
+
+      setVariationSearchResults(variationsData);
     } catch (error) {
-      console.error("Error fetching variations:", error);
+      console.error("Error searching variations:", error);
       setError("Failed to load product variations");
     } finally {
-      setIsLoadingVariations(false);
+      setIsSearchingVariations(false);
     }
   };
 
@@ -149,13 +176,12 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
   };
 
   const handleAssignCogs = async () => {
-    if (!selectedProductId) {
+    if (!selectedProduct) {
       setError("Please select a product");
       return;
     }
 
-    const product = products.find((p) => p.id === parseInt(selectedProductId));
-    if (product.type === "variable" && !selectedVariationId) {
+    if (selectedProduct.type === "variable" && !selectedVariation) {
       setError("Please select a product variation");
       return;
     }
@@ -171,9 +197,9 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
       setError("");
       setSuccess("");
 
-      const endpoint = selectedVariationId
-        ? `/wp-json/wc/v3/products/${selectedProductId}/variations/${selectedVariationId}`
-        : `/wp-json/wc/v3/products/${selectedProductId}`;
+      const endpoint = selectedVariation
+        ? `/wp-json/wc/v3/products/${selectedProduct.id}/variations/${selectedVariation.id}`
+        : `/wp-json/wc/v3/products/${selectedProduct.id}`;
 
       // Prepare the update payload
       const payload = {
@@ -199,7 +225,7 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
       const updatedProduct = await response.json();
       setSuccess(
         `Successfully assigned COGS value of $${cogsValue.toFixed(2)} to ${
-          selectedVariationId ? "variation" : "product"
+          selectedVariation ? "variation" : "product"
         }`
       );
 
@@ -215,9 +241,10 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
 
   const handleClose = () => {
     if (!isSaving) {
-      setSelectedProductId("");
-      setSelectedVariationId("");
-      setVariations([]);
+      setSelectedProduct(null);
+      setSelectedVariation(null);
+      setProductSearchResults([]);
+      setVariationSearchResults([]);
       setCurrentCogs(null);
       setError("");
       setSuccess("");
@@ -226,12 +253,12 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
     }
   };
 
-  const productOptions = products.map((product) => ({
+  const productOptions = productSearchResults.map((product) => ({
     label: `${product.name} (${product.type})`,
     value: product.id.toString(),
   }));
 
-  const variationOptions = variations.map((variation) => ({
+  const variationOptions = variationSearchResults.map((variation) => ({
     label: variation.attributes
       .map((attr) => `${attr.name}: ${attr.option}`)
       .join(", "),
@@ -291,51 +318,57 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
               </CardBody>
             </Card>
 
-            {/* Product Selection */}
-            {isLoadingProducts ? (
-              <div style={{ textAlign: "center", padding: "1rem" }}>
+            {/* Product Search */}
+            <ComboboxControl
+              label="Search for Product"
+              value={selectedProduct?.id.toString() || ""}
+              onChange={(value) => {
+                const product = productSearchResults.find(
+                  (p) => p.id.toString() === value
+                );
+                setSelectedProduct(product || null);
+              }}
+              options={productOptions}
+              onFilterValueChange={(searchTerm) => {
+                searchProducts(searchTerm);
+              }}
+              placeholder="Type to search products..."
+              help="Type at least 3 characters to search for a product"
+            />
+
+            {isSearchingProducts && (
+              <div style={{ textAlign: "center", padding: "0.5rem" }}>
                 <Spinner />
-                <p>Loading products...</p>
               </div>
-            ) : (
-              <SelectControl
-                __next40pxDefaultSize
-                __nextHasNoMarginBottom
-                label="Select Product"
-                value={selectedProductId}
-                options={[
-                  { label: "Choose a product...", value: "" },
-                  ...productOptions,
-                ]}
-                onChange={(value) => setSelectedProductId(value)}
-              />
             )}
 
-            {/* Variation Selection (for variable products) */}
-            {selectedProductId &&
-              products.find((p) => p.id === parseInt(selectedProductId))
-                ?.type === "variable" && (
-                <>
-                  {isLoadingVariations ? (
-                    <div style={{ textAlign: "center", padding: "1rem" }}>
-                      <Spinner />
-                      <p>Loading variations...</p>
-                    </div>
-                  ) : (
-                    <SelectControl
-                      __next40pxDefaultSize
-                      __nextHasNoMarginBottom
-                      label="Select Variation"
-                      value={selectedVariationId}
-                      options={[
-                        { label: "Choose a variation...", value: "" },
-                        ...variationOptions,
-                      ]}
-                      onChange={(value) => setSelectedVariationId(value)}
-                    />
-                  )}
-                </>
-              )}
+            {/* Variation Search (for variable products) */}
+            {selectedProduct && selectedProduct.type === "variable" && (
+              <>
+                <ComboboxControl
+                  label="Search for Variation"
+                  value={selectedVariation?.id.toString() || ""}
+                  onChange={(value) => {
+                    const variation = variationSearchResults.find(
+                      (v) => v.id.toString() === value
+                    );
+                    setSelectedVariation(variation || null);
+                  }}
+                  options={variationOptions}
+                  onFilterValueChange={(searchTerm) => {
+                    searchVariations(searchTerm);
+                  }}
+                  placeholder="Type to search variations..."
+                  help="Type at least 3 characters to filter variations"
+                />
+
+                {isSearchingVariations && (
+                  <div style={{ textAlign: "center", padding: "0.5rem" }}>
+                    <Spinner />
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Current COGS Display */}
             {currentCogs !== null && (
@@ -383,10 +416,8 @@ function AssignCogsModal({ isOpen, onClose, totalCost, costPerServing }) {
                 onClick={handleAssignCogs}
                 isBusy={isSaving}
                 disabled={
-                  !selectedProductId ||
-                  (products.find((p) => p.id === parseInt(selectedProductId))
-                    ?.type === "variable" &&
-                    !selectedVariationId) ||
+                  !selectedProduct ||
+                  (selectedProduct.type === "variable" && !selectedVariation) ||
                   isSaving
                 }
               >
