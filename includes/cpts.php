@@ -293,6 +293,18 @@ class BCRecipeCalculator {
 
 		register_post_meta(
 			'bc_recipe',
+			'recipe_packaging',
+			array(
+				'show_in_rest'      => true,
+				'single'            => true,
+				'type'              => 'string',
+				'default'           => '[]',
+				'sanitize_callback' => array( $this, 'sanitize_recipe_ingredients' ),
+			)
+		);
+
+		register_post_meta(
+			'bc_recipe',
 			'total_cost',
 			array(
 				'show_in_rest'      => true,
