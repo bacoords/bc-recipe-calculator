@@ -15,6 +15,7 @@ import { __ } from "@wordpress/i18n";
 import { useDispatch } from "@wordpress/data";
 import { store as coreDataStore, useEntityRecord } from "@wordpress/core-data";
 import CreateIngredientModal from "./CreateIngredientModal";
+import AssignCogsModal from "./AssignCogsModal";
 
 function SingleRecipe({ postId: propPostId }) {
   // Get the post ID from props or from the WordPress environment
@@ -42,6 +43,7 @@ function SingleRecipe({ postId: propPostId }) {
   const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCogsModalOpen, setIsCogsModalOpen] = useState(false);
 
   // State for saving data
   const [isSaving, setIsSaving] = useState(false);
@@ -543,6 +545,16 @@ function SingleRecipe({ postId: propPostId }) {
               </CardBody>
             </Card>
           </Grid>
+
+          <Flex justify="flex-end" style={{ marginTop: "1rem" }}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsCogsModalOpen(true)}
+              disabled={!totalCost || totalCost === 0}
+            >
+              Assign to WooCommerce Product
+            </Button>
+          </Flex>
         </CardBody>
       </Card>
 
@@ -550,6 +562,13 @@ function SingleRecipe({ postId: propPostId }) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onIngredientCreated={handleIngredientCreated}
+      />
+
+      <AssignCogsModal
+        isOpen={isCogsModalOpen}
+        onClose={() => setIsCogsModalOpen(false)}
+        totalCost={totalCost}
+        costPerServing={costPerServing}
       />
     </div>
   );
