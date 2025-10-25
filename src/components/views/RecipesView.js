@@ -50,7 +50,6 @@ export default function RecipesView({
         </Flex>
       </div>
       <DataViews
-        type="table"
         data={records}
         fields={recipeFields(navigateToEdit)}
         view={view}
@@ -60,8 +59,9 @@ export default function RecipesView({
           totalItems,
           totalPages,
         }}
-        search={true}
-        searchLabel="Search recipes..."
+        defaultLayouts={{
+          table: {},
+        }}
       />
     </>
   );
