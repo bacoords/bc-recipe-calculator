@@ -21,6 +21,21 @@ export function useViewState(type = "recipes") {
           titleField: "name",
           fields: ["price", "quantity", "unit"],
         };
+      case "packaging":
+        return {
+          type: "table",
+          perPage: 10,
+          page: 1,
+          layout: {},
+          sort: {
+            orderby: "name",
+            order: "asc",
+          },
+          search: "",
+          filters: [],
+          titleField: "name",
+          fields: ["price", "quantity", "unit"],
+        };
       case "recipes":
       default:
         return {
