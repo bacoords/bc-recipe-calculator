@@ -5,8 +5,7 @@ export const ingredientFields = (navigateToEditIngredient) => [
   {
     id: "name",
     type: "text",
-    label: "Name",
-    header: "Ingredient Name",
+    label: "Ingredient Name",
     enableHiding: false,
     getValue: (item) => item.name || "",
     render: ({ item }) => (
@@ -34,8 +33,7 @@ export const ingredientFields = (navigateToEditIngredient) => [
   {
     id: "price",
     type: "number",
-    label: "Price",
-    header: "Price ($)",
+    label: "Price ($)",
     getValue: (item) => item.meta?.ingredient_price || 0,
     render: ({ item }) => {
       const price = item.meta?.ingredient_price || 0;
@@ -45,8 +43,7 @@ export const ingredientFields = (navigateToEditIngredient) => [
   {
     id: "quantity",
     type: "number",
-    label: "Quantity",
-    header: "Quantity per Package",
+    label: "Quantity per Package",
     getValue: (item) => item.meta?.ingredient_quantity || 0,
     render: ({ item }) => {
       const quantity = item.meta?.ingredient_quantity || 0;
@@ -57,7 +54,6 @@ export const ingredientFields = (navigateToEditIngredient) => [
     id: "unit",
     type: "text",
     label: "Unit",
-    header: "Unit",
     getValue: (item) => item.meta?.ingredient_unit || "",
     render: ({ item }) => {
       return item.meta?.ingredient_unit || "";

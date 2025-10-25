@@ -58,7 +58,6 @@ export default function IngredientsView({
         </Flex>
       </div>
       <DataViews
-        type="table"
         data={records}
         fields={ingredientFields(navigateToEditIngredient)}
         view={view}
@@ -68,8 +67,9 @@ export default function IngredientsView({
           totalItems,
           totalPages: Math.ceil(totalItems / (view?.perPage || 10)),
         }}
-        search={true}
-        searchLabel="Search ingredients..."
+        defaultLayouts={{
+          table: {},
+        }}
       />
     </>
   );

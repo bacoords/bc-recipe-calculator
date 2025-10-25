@@ -7,12 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "wp-scripts build",
     "start": "wp-scripts start",
-	"plugin-zip": "wp-scripts plugin-zip"
+    "plugin-zip": "wp-scripts plugin-zip"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@wordpress/dataviews": "^4.22.0",
+    "@wordpress/dataviews": "^10.1.0",
     "@wordpress/icons": "^10.1.0"
   },
   "devDependencies": {

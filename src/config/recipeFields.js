@@ -5,8 +5,7 @@ export const recipeFields = (navigateToEdit) => [
   {
     id: "title",
     type: "text",
-    label: "Title",
-    header: "Recipe Title",
+    label: "Recipe Title",
     enableHiding: false,
     getValue: (item) => item.title?.rendered || item.title?.raw || "",
     render: ({ item }) => (
@@ -34,8 +33,7 @@ export const recipeFields = (navigateToEdit) => [
   {
     id: "total_cost",
     type: "number",
-    label: "Total Cost",
-    header: "Total Cost ($)",
+    label: "Total Cost ($)",
     getValue: (item) => item.meta?.total_cost || 0,
     render: ({ item }) => {
       const cost = item.meta?.total_cost || 0;
@@ -45,8 +43,7 @@ export const recipeFields = (navigateToEdit) => [
   {
     id: "cost_per_serving",
     type: "number",
-    label: "Cost per Serving",
-    header: "Cost per Serving ($)",
+    label: "Cost per Serving ($)",
     getValue: (item) => item.meta?.cost_per_serving || 0,
     render: ({ item }) => {
       const cost = item.meta?.cost_per_serving || 0;
@@ -57,7 +54,6 @@ export const recipeFields = (navigateToEdit) => [
     id: "recipe_servings",
     type: "number",
     label: "Servings",
-    header: "Servings",
     getValue: (item) => item.meta?.recipe_servings || 0,
     render: ({ item }) => {
       const servings = item.meta?.recipe_servings || 0;

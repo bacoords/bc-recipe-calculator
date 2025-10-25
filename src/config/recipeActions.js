@@ -20,7 +20,6 @@ export const recipeActions = (navigateToEdit) => [
   {
     id: "delete",
     label: "Delete",
-    isDestructive: true,
     supportsBulk: true,
     icon: <Icon icon={trash} />,
     RenderModal: ({ items, closeModal, onActionPerformed }) => {
