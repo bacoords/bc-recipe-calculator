@@ -2,6 +2,7 @@ import { TabPanel } from "@wordpress/components";
 import { useNavigation } from "../hooks/useNavigation";
 import RecipesView from "./views/RecipesView";
 import IngredientsView from "./views/IngredientsView";
+import PackagingView from "./views/PackagingView";
 import ShoppingListView from "./views/ShoppingListView";
 
 function App() {
@@ -9,10 +10,13 @@ function App() {
     currentView,
     editingPostId,
     editingTermId,
+    editingPackagingId,
     navigateToEdit,
     navigateToList,
     navigateToIngredientsList,
     navigateToEditIngredient,
+    navigateToPackagingList,
+    navigateToEditPackaging,
     handleTabSelect,
     VIEWS,
   } = useNavigation();
@@ -42,6 +46,17 @@ function App() {
           editingTermId={editingTermId}
           navigateToEditIngredient={navigateToEditIngredient}
           navigateToIngredientsList={navigateToIngredientsList}
+        />
+      ),
+    },
+    {
+      name: VIEWS.PACKAGING,
+      title: "Packaging",
+      content: (
+        <PackagingView
+          editingTermId={editingPackagingId}
+          navigateToEditPackaging={navigateToEditPackaging}
+          navigateToPackagingList={navigateToPackagingList}
         />
       ),
     },

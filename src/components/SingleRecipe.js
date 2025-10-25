@@ -15,6 +15,7 @@ import { __ } from "@wordpress/i18n";
 import { useDispatch } from "@wordpress/data";
 import { store as coreDataStore, useEntityRecord } from "@wordpress/core-data";
 import CreateIngredientModal from "./CreateIngredientModal";
+import CreatePackagingModal from "./CreatePackagingModal";
 
 function SingleRecipe({ postId: propPostId }) {
   // Get the post ID from props or from the WordPress environment
@@ -34,14 +35,18 @@ function SingleRecipe({ postId: propPostId }) {
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState(1);
   const [ingredients, setIngredients] = useState([]);
+  const [packaging, setPackaging] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [costPerServing, setCostPerServing] = useState(0);
 
   // New state for taxonomy integration
   const [availableIngredients, setAvailableIngredients] = useState([]);
+  const [availablePackaging, setAvailablePackaging] = useState([]);
   const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
+  const [isLoadingPackaging, setIsLoadingPackaging] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPackagingModalOpen, setIsPackagingModalOpen] = useState(false);
 
   // State for saving data
   const [isSaving, setIsSaving] = useState(false);
@@ -50,9 +55,10 @@ function SingleRecipe({ postId: propPostId }) {
   const [priceChanges, setPriceChanges] = useState([]);
   const [isCheckingPrices, setIsCheckingPrices] = useState(false);
 
-  // Fetch ingredients from WordPress taxonomy
+  // Fetch ingredients and packaging from WordPress taxonomy
   useEffect(() => {
     fetchIngredients();
+    fetchPackaging();
   }, []);
 
   // Check for price changes when ingredients are loaded and we have recipe data
@@ -69,7 +75,11 @@ function SingleRecipe({ postId: propPostId }) {
       const loadedIngredients = recipeData.meta?.recipe_ingredients
         ? JSON.parse(recipeData.meta.recipe_ingredients)
         : [];
+      const loadedPackaging = recipeData.meta?.recipe_packaging
+        ? JSON.parse(recipeData.meta.recipe_packaging)
+        : [];
       setIngredients(loadedIngredients);
+      setPackaging(loadedPackaging);
       setTitle(recipeData.title?.rendered || recipeData.title?.raw || "");
       // Load saved cost values
       setTotalCost(recipeData.meta?.total_cost || 0);
@@ -167,16 +177,34 @@ function SingleRecipe({ postId: propPostId }) {
         .map((ingredient) => ingredient.termId);
 
       // Update the entity record in the store
+      // Prepare packaging data with current prices
+      const packagingWithPriceData = packaging.map((pkg) => {
+        const packageData = availablePackaging.find((p) => p.id === pkg.termId);
+        return {
+          ...pkg,
+          currentPrice: packageData?.meta?.packaging_price || 0,
+          currentQuantity: packageData?.meta?.packaging_quantity || 0,
+          currentUnit: packageData?.meta?.packaging_unit || "",
+        };
+      });
+
+      // Get packaging term IDs for taxonomy relationship
+      const packagingTermIds = packaging
+        .filter((pkg) => pkg.termId)
+        .map((pkg) => pkg.termId);
+
       editEntityRecord("postType", "bc_recipe", postId, {
         title: title,
         status: "publish",
         meta: {
           recipe_servings: servings,
           recipe_ingredients: JSON.stringify(ingredientsWithPriceData),
+          recipe_packaging: JSON.stringify(packagingWithPriceData),
           total_cost: totalCost,
           cost_per_serving: costPerServing,
         },
         bc_ingredient: ingredientTermIds,
+        bc_packaging: packagingTermIds,
       });
 
       // Save the edited entity record
@@ -203,6 +231,23 @@ function SingleRecipe({ postId: propPostId }) {
       setError("Failed to load ingredients");
     } finally {
       setIsLoadingIngredients(false);
+    }
+  };
+
+  const fetchPackaging = async () => {
+    try {
+      setIsLoadingPackaging(true);
+      const response = await fetch("/wp-json/wp/v2/bc_packaging?per_page=100");
+      if (!response.ok) {
+        throw new Error("Failed to fetch packaging");
+      }
+      const packagingItems = await response.json();
+      setAvailablePackaging(packagingItems);
+    } catch (error) {
+      console.error("Error fetching packaging:", error);
+      setError("Failed to load packaging");
+    } finally {
+      setIsLoadingPackaging(false);
     }
   };
 
@@ -305,19 +350,130 @@ function SingleRecipe({ postId: propPostId }) {
     }
   };
 
-  // Calculate total cost whenever ingredients change
+  // Packaging management functions
+  const addPackaging = () => {
+    const newPackaging = {
+      id: Date.now(),
+      termId: null,
+      name: "",
+      recipeAmount: "",
+      cost: 0,
+    };
+    setPackaging([...packaging, newPackaging]);
+  };
+
+  const handlePackagingCreated = async (createdPackaging) => {
+    setAvailablePackaging([...availablePackaging, createdPackaging]);
+    await fetchPackaging();
+  };
+
+  const removePackaging = (id) => {
+    setPackaging(packaging.filter((pkg) => pkg.id !== id));
+  };
+
+  const updatePackaging = (id, field, value) => {
+    setPackaging(
+      packaging.map((pkg) => {
+        if (pkg.id === id) {
+          const updated = { ...pkg, [field]: value };
+
+          // Calculate cost for this packaging using taxonomy data
+          if (updated.termId && updated.recipeAmount) {
+            const selectedPackaging = availablePackaging.find(
+              (p) => p.id === updated.termId
+            );
+            if (selectedPackaging) {
+              const price = parseFloat(
+                selectedPackaging.meta?.packaging_price || 0
+              );
+              const packageAmount = parseFloat(
+                selectedPackaging.meta?.packaging_quantity || 0
+              );
+              const recipeAmount = parseFloat(updated.recipeAmount);
+
+              if (packageAmount > 0 && !isNaN(recipeAmount)) {
+                updated.cost = (price / packageAmount) * recipeAmount;
+              } else {
+                updated.cost = 0;
+              }
+            } else {
+              updated.cost = 0;
+            }
+          } else {
+            updated.cost = 0;
+          }
+
+          return updated;
+        }
+        return pkg;
+      })
+    );
+  };
+
+  const selectPackagingFromTaxonomy = (id, termId) => {
+    const selectedPackaging = availablePackaging.find(
+      (p) => p.id === parseInt(termId)
+    );
+    if (selectedPackaging) {
+      setPackaging(
+        packaging.map((pkg) => {
+          if (pkg.id === id) {
+            const updated = {
+              ...pkg,
+              termId: selectedPackaging.id,
+              name: selectedPackaging.name,
+            };
+
+            // Calculate cost for this packaging using taxonomy data
+            if (updated.termId && updated.recipeAmount) {
+              const price = parseFloat(
+                selectedPackaging.meta?.packaging_price || 0
+              );
+              const packageAmount = parseFloat(
+                selectedPackaging.meta?.packaging_quantity || 0
+              );
+              const recipeAmount = parseFloat(updated.recipeAmount);
+
+              if (packageAmount > 0) {
+                updated.cost = (price / packageAmount) * recipeAmount;
+              } else {
+                updated.cost = 0;
+              }
+            } else {
+              updated.cost = 0;
+            }
+
+            return updated;
+          }
+          return pkg;
+        })
+      );
+    }
+  };
+
+  // Calculate total cost whenever ingredients or packaging change
   useEffect(() => {
-    const total = ingredients.reduce(
-      (sum, ingredient) => sum + ingredient.cost,
+    const ingredientsTotal = ingredients.reduce(
+      (sum, ingredient) => sum + (parseFloat(ingredient.cost) || 0),
       0
     );
+    const packagingTotal = packaging.reduce(
+      (sum, pkg) => sum + (parseFloat(pkg.cost) || 0),
+      0
+    );
+    const total = ingredientsTotal + packagingTotal;
     setTotalCost(total);
     setCostPerServing(servings > 0 ? total / servings : 0);
-  }, [ingredients, servings]);
+  }, [ingredients, packaging, servings]);
 
   const ingredientOptions = availableIngredients.map((ingredient) => ({
     label: ingredient.name,
     value: ingredient.id.toString(),
+  }));
+
+  const packagingOptions = availablePackaging.map((pkg) => ({
+    label: pkg.name,
+    value: pkg.id.toString(),
   }));
 
   // Show loading state while data is being fetched
@@ -520,6 +676,80 @@ function SingleRecipe({ postId: propPostId }) {
             </Flex>
           </div>
 
+          {/* Packaging Section */}
+          <div style={{ marginTop: "2rem" }}>
+            <h3>Packaging</h3>
+            {packaging.map((pkg) => (
+              <div
+                key={pkg.id}
+                className="packaging-row"
+                style={{ marginBottom: "1rem" }}
+              >
+                <Grid
+                  templateColumns="40% 40% 20%"
+                  align="center"
+                  className="grid-packaging"
+                >
+                  <SelectControl
+                    __next40pxDefaultSize
+                    __nextHasNoMarginBottom
+                    value={pkg.termId?.toString() || ""}
+                    label="Select Packaging:"
+                    options={[
+                      { label: "Choose packaging...", value: "" },
+                      ...packagingOptions,
+                    ]}
+                    onChange={(value) =>
+                      selectPackagingFromTaxonomy(pkg.id, value)
+                    }
+                  />
+                  <TextControl
+                    __next40pxDefaultSize
+                    __nextHasNoMarginBottom
+                    label={
+                      "Amount Used in Recipe (" +
+                      (pkg.termId
+                        ? availablePackaging.find((p) => p.id === pkg.termId)
+                            ?.meta?.packaging_unit || "units"
+                        : "units") +
+                      ")"
+                    }
+                    type="number"
+                    step="1"
+                    value={pkg.recipeAmount}
+                    onChange={(value) =>
+                      updatePackaging(pkg.id, "recipeAmount", value)
+                    }
+                    placeholder="0"
+                  />
+
+                  <div>
+                    <span className="cost-value">${pkg.cost.toFixed(2)}</span>
+
+                    <Button
+                      isDestructive
+                      onClick={() => removePackaging(pkg.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </Grid>
+              </div>
+            ))}
+
+            <Flex justify="flex-end" style={{ marginBlock: "1rem" }}>
+              <Button variant="primary" onClick={addPackaging}>
+                + Add Packaging
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setIsPackagingModalOpen(true)}
+              >
+                + Create New Packaging
+              </Button>
+            </Flex>
+          </div>
+
           <Grid columns={2}>
             <Card>
               <CardHeader>
@@ -550,6 +780,12 @@ function SingleRecipe({ postId: propPostId }) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onIngredientCreated={handleIngredientCreated}
+      />
+
+      <CreatePackagingModal
+        isOpen={isPackagingModalOpen}
+        onClose={() => setIsPackagingModalOpen(false)}
+        onPackagingCreated={handlePackagingCreated}
       />
     </div>
   );

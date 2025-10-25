@@ -16,6 +16,7 @@ class BCRecipeCalculator {
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_recipe_post_type' ) );
 		add_action( 'init', array( $this, 'register_ingredient_taxonomy' ) );
+		add_action( 'init', array( $this, 'register_packaging_taxonomy' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_recipes_dashboard_page' ) );
@@ -26,9 +27,19 @@ class BCRecipeCalculator {
 		add_action( 'created_bc_ingredient', array( $this, 'save_ingredient_custom_fields' ) );
 		add_action( 'edited_bc_ingredient', array( $this, 'save_ingredient_custom_fields' ) );
 
+		// Add hooks for packaging taxonomy custom fields.
+		add_action( 'bc_packaging_add_form_fields', array( $this, 'add_packaging_custom_fields' ) );
+		add_action( 'bc_packaging_edit_form_fields', array( $this, 'edit_packaging_custom_fields' ) );
+		add_action( 'created_bc_packaging', array( $this, 'save_packaging_custom_fields' ) );
+		add_action( 'edited_bc_packaging', array( $this, 'save_packaging_custom_fields' ) );
+
 		// Add hooks for ingredient taxonomy admin table columns.
 		add_filter( 'manage_edit-bc_ingredient_columns', array( $this, 'add_ingredient_admin_columns' ) );
 		add_filter( 'manage_bc_ingredient_custom_column', array( $this, 'populate_ingredient_admin_columns' ), 10, 3 );
+
+		// Add hooks for packaging taxonomy admin table columns.
+		add_filter( 'manage_edit-bc_packaging_columns', array( $this, 'add_packaging_admin_columns' ) );
+		add_filter( 'manage_bc_packaging_custom_column', array( $this, 'populate_packaging_admin_columns' ), 10, 3 );
 
 		// Add hooks for recipe post type admin table columns.
 		add_filter( 'manage_edit-bc_recipe_columns', array( $this, 'add_recipe_admin_columns' ) );
@@ -111,6 +122,37 @@ class BCRecipeCalculator {
 	}
 
 	/**
+	 * Register the packaging taxonomy
+	 */
+	public function register_packaging_taxonomy() {
+		$labels = array(
+			'name'              => 'Packaging',
+			'singular_name'     => 'Packaging',
+			'search_items'      => 'Search Packaging',
+			'all_items'         => 'All Packaging',
+			'parent_item'       => 'Parent Packaging',
+			'parent_item_colon' => 'Parent Packaging:',
+			'edit_item'         => 'Edit Packaging',
+			'update_item'       => 'Update Packaging',
+			'add_new_item'      => 'Add New Packaging',
+			'new_item_name'     => 'New Packaging Name',
+			'menu_name'         => 'Packaging',
+		);
+
+		$args = array(
+			'hierarchical'      => false,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => false,
+			'query_var'         => true,
+			'rewrite'           => array( 'slug' => 'packaging' ),
+			'show_in_rest'      => true,
+		);
+
+		register_taxonomy( 'bc_packaging', array( 'bc_recipe' ), $args );
+	}
+
+	/**
 	 * Register REST API fields for taxonomy meta
 	 */
 	public function register_taxonomy_meta_rest_fields() {
@@ -122,6 +164,19 @@ class BCRecipeCalculator {
 				'update_callback' => array( $this, 'update_taxonomy_meta' ),
 				'schema'          => array(
 					'description' => 'Taxonomy meta fields.',
+					'type'        => 'object',
+				),
+			)
+		);
+
+		register_rest_field(
+			'bc_packaging',
+			'meta',
+			array(
+				'get_callback'    => array( $this, 'get_packaging_meta' ),
+				'update_callback' => array( $this, 'update_packaging_meta' ),
+				'schema'          => array(
+					'description' => 'Packaging meta fields.',
 					'type'        => 'object',
 				),
 			)
@@ -169,6 +224,46 @@ class BCRecipeCalculator {
 	}
 
 	/**
+	 * Get packaging meta for REST API
+	 *
+	 * @param array $object The taxonomy term object.
+	 * @return array Meta fields.
+	 */
+	public function get_packaging_meta( $object ) {
+		$term_id = $object['id'];
+		return array(
+			'packaging_price'    => get_term_meta( $term_id, 'packaging_price', true ),
+			'packaging_quantity' => get_term_meta( $term_id, 'packaging_quantity', true ),
+			'packaging_unit'     => get_term_meta( $term_id, 'packaging_unit', true ),
+		);
+	}
+
+	/**
+	 * Update packaging meta for REST API
+	 *
+	 * @param mixed  $value The meta value.
+	 * @param object $object The taxonomy term object.
+	 * @return bool|WP_Error
+	 */
+	public function update_packaging_meta( $value, $object ) {
+		$term_id = $object->term_id;
+
+		if ( isset( $value['packaging_price'] ) ) {
+			update_term_meta( $term_id, 'packaging_price', sanitize_text_field( $value['packaging_price'] ) );
+		}
+
+		if ( isset( $value['packaging_quantity'] ) ) {
+			update_term_meta( $term_id, 'packaging_quantity', sanitize_text_field( $value['packaging_quantity'] ) );
+		}
+
+		if ( isset( $value['packaging_unit'] ) ) {
+			update_term_meta( $term_id, 'packaging_unit', sanitize_text_field( $value['packaging_unit'] ) );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Register post meta fields for recipes
 	 */
 	public function register_recipe_post_meta() {
@@ -187,6 +282,18 @@ class BCRecipeCalculator {
 		register_post_meta(
 			'bc_recipe',
 			'recipe_ingredients',
+			array(
+				'show_in_rest'      => true,
+				'single'            => true,
+				'type'              => 'string',
+				'default'           => '[]',
+				'sanitize_callback' => array( $this, 'sanitize_recipe_ingredients' ),
+			)
+		);
+
+		register_post_meta(
+			'bc_recipe',
+			'recipe_packaging',
 			array(
 				'show_in_rest'      => true,
 				'single'            => true,
@@ -356,6 +463,164 @@ class BCRecipeCalculator {
 		if ( isset( $_POST['ingredient_unit'] ) ) {
 			$unit = sanitize_text_field( wp_unslash( $_POST['ingredient_unit'] ) );
 			update_term_meta( $term_id, 'ingredient_unit', $unit );
+		}
+	}
+
+	/**
+	 * Add custom fields to the packaging add form
+	 */
+	public function add_packaging_custom_fields() {
+		// Add nonce for security.
+		wp_nonce_field( 'add-tag', '_wpnonce_add-tag' );
+		?>
+		<div class="form-field">
+			<label for="packaging_price"><?php esc_html_e( 'Price', 'bc-recipe-calculator' ); ?></label>
+			<input type="number" name="packaging_price" id="packaging_price" step="0.01" min="0" />
+			<p class="description"><?php esc_html_e( 'Enter the price per unit of this packaging.', 'bc-recipe-calculator' ); ?></p>
+		</div>
+		<div class="form-field">
+			<label for="packaging_quantity"><?php esc_html_e( 'Quantity', 'bc-recipe-calculator' ); ?></label>
+			<input type="number" name="packaging_quantity" id="packaging_quantity" step="0.01" min="0" />
+			<p class="description"><?php esc_html_e( 'Enter the default quantity for this packaging.', 'bc-recipe-calculator' ); ?></p>
+		</div>
+		<div class="form-field">
+			<label for="packaging_unit"><?php esc_html_e( 'Unit', 'bc-recipe-calculator' ); ?></label>
+			<input type="text" name="packaging_unit" id="packaging_unit" />
+			<p class="description"><?php esc_html_e( 'Enter the unit for this packaging (e.g., pieces, boxes, containers).', 'bc-recipe-calculator' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Add custom fields to the packaging edit form
+	 *
+	 * @param WP_Term $term The term object.
+	 */
+	public function edit_packaging_custom_fields( $term ) {
+		$price    = get_term_meta( $term->term_id, 'packaging_price', true );
+		$quantity = get_term_meta( $term->term_id, 'packaging_quantity', true );
+		$unit     = get_term_meta( $term->term_id, 'packaging_unit', true );
+		?>
+		<tr class="form-field">
+			<th scope="row">
+				<label for="packaging_price"><?php esc_html_e( 'Price', 'bc-recipe-calculator' ); ?></label>
+			</th>
+			<td>
+				<input type="number" name="packaging_price" id="packaging_price" value="<?php echo esc_attr( $price ); ?>" step="0.01" min="0" />
+				<p class="description"><?php esc_html_e( 'Enter the price per unit of this packaging.', 'bc-recipe-calculator' ); ?></p>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<th scope="row">
+				<label for="packaging_quantity"><?php esc_html_e( 'Quantity', 'bc-recipe-calculator' ); ?></label>
+			</th>
+			<td>
+				<input type="number" name="packaging_quantity" id="packaging_quantity" value="<?php echo esc_attr( $quantity ); ?>" step="0.01" min="0" />
+				<p class="description"><?php esc_html_e( 'Enter the default quantity for this packaging.', 'bc-recipe-calculator' ); ?></p>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<th scope="row">
+				<label for="packaging_unit"><?php esc_html_e( 'Unit', 'bc-recipe-calculator' ); ?></label>
+			</th>
+			<td>
+				<input type="text" name="packaging_unit" id="packaging_unit" value="<?php echo esc_attr( $unit ); ?>" />
+				<p class="description"><?php esc_html_e( 'Enter the unit for this packaging (e.g., pieces, boxes, containers).', 'bc-recipe-calculator' ); ?></p>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Save the packaging custom fields
+	 *
+	 * @param int $term_id The term ID.
+	 */
+	public function save_packaging_custom_fields( $term_id ) {
+		// Verify nonce for security - handle both creation and editing scenarios.
+		$nonce_verified = false;
+
+		if ( isset( $_POST['_wpnonce'] ) ) {
+			// Check for edit nonce (when editing existing term).
+			if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'update-tag_' . $term_id ) ) {
+				$nonce_verified = true;
+			}
+			// Check for add nonce (when creating new term).
+			elseif ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'add-tag' ) ) {
+				$nonce_verified = true;
+			}
+		}
+		// Check for the specific add-tag nonce field we added.
+		elseif ( isset( $_POST['_wpnonce_add-tag'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce_add-tag'] ) ), 'add-tag' ) ) {
+			$nonce_verified = true;
+		}
+
+		if ( ! $nonce_verified ) {
+			return;
+		}
+
+		if ( isset( $_POST['packaging_price'] ) ) {
+			$price = sanitize_text_field( wp_unslash( $_POST['packaging_price'] ) );
+			update_term_meta( $term_id, 'packaging_price', $price );
+		}
+
+		if ( isset( $_POST['packaging_quantity'] ) ) {
+			$quantity = sanitize_text_field( wp_unslash( $_POST['packaging_quantity'] ) );
+			update_term_meta( $term_id, 'packaging_quantity', $quantity );
+		}
+
+		if ( isset( $_POST['packaging_unit'] ) ) {
+			$unit = sanitize_text_field( wp_unslash( $_POST['packaging_unit'] ) );
+			update_term_meta( $term_id, 'packaging_unit', $unit );
+		}
+	}
+
+	/**
+	 * Add custom columns to the packaging taxonomy admin table
+	 *
+	 * @param array $columns The existing columns.
+	 * @return array Modified columns array.
+	 */
+	public function add_packaging_admin_columns( $columns ) {
+		$new_columns = array();
+
+		// Add our custom columns after the name column.
+		foreach ( $columns as $key => $value ) {
+			$new_columns[ $key ] = $value;
+			if ( 'name' === $key ) {
+				$new_columns['packaging_price']    = __( 'Price', 'bc-recipe-calculator' );
+				$new_columns['packaging_quantity'] = __( 'Quantity', 'bc-recipe-calculator' );
+				$new_columns['packaging_unit']     = __( 'Unit', 'bc-recipe-calculator' );
+			}
+		}
+
+		return $new_columns;
+	}
+
+	/**
+	 * Populate the custom columns in the packaging taxonomy admin table
+	 *
+	 * @param string $content The column content.
+	 * @param string $column_name The column name.
+	 * @param int    $term_id The term ID.
+	 * @return string The column content.
+	 */
+	public function populate_packaging_admin_columns( $content, $column_name, $term_id ) {
+		switch ( $column_name ) {
+			case 'packaging_price':
+				$price = get_term_meta( $term_id, 'packaging_price', true );
+				return $price ? '$' . number_format( (float) $price, 2 ) : '—';
+
+			case 'packaging_quantity':
+				$quantity = get_term_meta( $term_id, 'packaging_quantity', true );
+				return $quantity ? esc_html( $quantity ) : '—';
+
+			case 'packaging_unit':
+				$unit = get_term_meta( $term_id, 'packaging_unit', true );
+				return $unit ? esc_html( $unit ) : '—';
+
+			default:
+				return $content;
 		}
 	}
 
