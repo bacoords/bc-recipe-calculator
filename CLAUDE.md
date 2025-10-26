@@ -85,6 +85,13 @@ src/
     └── navigation.js             # Navigation constants
 ```
 
+### WooCommerce integration
+
+- This calculator has a loose integration with the WooCommerce cost_of_goods (COGS) meta field.
+- Use https://developer.woocommerce.com/docs/llms-full.txt to fetch the general WooCommerce documentation
+- Use https://developer.woocommerce.com/2025/05/21/cost-of-goods-soldcogs-is-ready-to-blossom-out-of-beta-this-summer/ for more information on COGS.
+- For MCP integration, refer to https://developer.woocommerce.com/docs/features/mcp/ and the Abilities API documentation https://github.com/WordPress/abilities-api/tree/trunk/docs
+
 ### WordPress Integration Points
 
 **Custom Post Type**: `bc_recipe`
