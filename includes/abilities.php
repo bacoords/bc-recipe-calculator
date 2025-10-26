@@ -265,10 +265,12 @@ add_action('abilities_api_init', function () {
 
             // Set serving count
             $serving_count = isset($input['serving_count']) ? $input['serving_count'] : 1;
-            update_post_meta($post_id, 'serving_count', $serving_count);
+            update_post_meta($post_id, 'recipe_servings', $serving_count);
 
             // Set ingredients and calculate total cost
             $total_cost = 0;
+            $recipe_ingredients = [];
+
             if (isset($input['ingredients']) && is_array($input['ingredients'])) {
                 $ingredient_ids = array_column($input['ingredients'], 'ingredient_id');
                 wp_set_object_terms($post_id, $ingredient_ids, 'bc_ingredient');
@@ -278,19 +280,35 @@ add_action('abilities_api_init', function () {
                     $ingredient_id = $ingredient['ingredient_id'];
                     $quantity = $ingredient['quantity'];
 
-                    update_post_meta($post_id, 'ingredient_' . $ingredient_id . '_quantity', $quantity);
+                    // Get ingredient term data
+                    $term = get_term($ingredient_id, 'bc_ingredient');
+                    if (!is_wp_error($term)) {
+                        $ingredient_price = get_term_meta($ingredient_id, 'ingredient_price', true);
+                        $ingredient_quantity = get_term_meta($ingredient_id, 'ingredient_quantity', true);
 
-                    // Calculate cost for this ingredient
-                    $ingredient_price = get_term_meta($ingredient_id, 'ingredient_price', true);
-                    $ingredient_quantity = get_term_meta($ingredient_id, 'ingredient_quantity', true);
+                        $cost = 0;
+                        if ($ingredient_price && $ingredient_quantity) {
+                            $price_per_unit = (float) $ingredient_price / (float) $ingredient_quantity;
+                            $cost = $price_per_unit * (float) $quantity;
+                            $total_cost += $cost;
+                        }
 
-                    if ($ingredient_price && $ingredient_quantity) {
-                        $price_per_unit = (float) $ingredient_price / (float) $ingredient_quantity;
-                        $total_cost += $price_per_unit * (float) $quantity;
+                        // Build ingredient object in the format SingleRecipe expects
+                        $recipe_ingredients[] = [
+                            'id' => time() . '_' . $ingredient_id, // Unique ID
+                            'termId' => $ingredient_id,
+                            'name' => $term->name,
+                            'recipeAmount' => (string) $quantity,
+                            'cost' => $cost,
+                            'savedPrice' => $ingredient_price,
+                            'savedQuantity' => $ingredient_quantity
+                        ];
                     }
                 }
             }
 
+            // Store ingredients in the recipe_ingredients meta field as JSON
+            update_post_meta($post_id, 'recipe_ingredients', wp_json_encode($recipe_ingredients));
             update_post_meta($post_id, 'total_cost', $total_cost);
 
             $cost_per_serving = $serving_count > 0 ? $total_cost / $serving_count : 0;
@@ -301,7 +319,8 @@ add_action('abilities_api_init', function () {
                 'title' => $input['title'],
                 'serving_count' => (float) $serving_count,
                 'total_cost' => (float) $total_cost,
-                'cost_per_serving' => (float) $cost_per_serving
+                'cost_per_serving' => (float) $cost_per_serving,
+                'ingredients' => $recipe_ingredients
             ];
         },
         'permission_callback' => function () {
