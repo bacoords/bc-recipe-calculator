@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BC Recipe Calculator
  * Description: Custom post type for recipes with calculator functionality
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: BC Recipe Calculator
  * License: GPL v2 or later
  * Text Domain: bc-recipe-calculator

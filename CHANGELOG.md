@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.6
+
+- Adds tools to Woo MCP integration for reading/creating recipes and ingredients
+- Fixes pagination in dataviews
+
 ## 1.0.5
 
 - Adds one-way COGS integration to push COGS values from recipes to any product or variation.
