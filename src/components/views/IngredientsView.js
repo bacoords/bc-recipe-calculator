@@ -16,7 +16,7 @@ export default function IngredientsView({
   navigateToIngredientsList,
 }) {
   const { view, setView } = useViewState("ingredients");
-  const { hasResolved, records, totalItems } = useIngredients();
+  const { hasResolved, records, totalItems, totalPages } = useIngredients(view);
 
   // If we're editing a specific ingredient, show the SingleIngredient component
   if (editingTermId) {
@@ -65,7 +65,7 @@ export default function IngredientsView({
         actions={ingredientActions(navigateToEditIngredient)}
         paginationInfo={{
           totalItems,
-          totalPages: Math.ceil(totalItems / (view?.perPage || 10)),
+          totalPages,
         }}
         defaultLayouts={{
           table: {},

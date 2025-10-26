@@ -1,5 +1,6 @@
 import { useMemo } from "@wordpress/element";
-import { useEntityRecords } from "@wordpress/core-data";
+import { useSelect } from "@wordpress/data";
+import { store as coreDataStore } from "@wordpress/core-data";
 
 /**
  * Custom hook for fetching recipe data
@@ -26,16 +27,27 @@ export function useRecipes(view) {
     };
   }, [view]);
 
-  const { hasResolved, records } = useEntityRecords(
-    "postType",
-    "bc_recipe",
-    queryArgs
+  const { hasResolved, records, totalItems, totalPages } = useSelect(
+    (select) => {
+      const { getEntityRecords, hasFinishedResolution, getEntityRecordsTotalItems, getEntityRecordsTotalPages } =
+        select(coreDataStore);
+
+      const selectorArgs = ["postType", "bc_recipe", queryArgs];
+
+      return {
+        records: getEntityRecords(...selectorArgs),
+        hasResolved: hasFinishedResolution("getEntityRecords", selectorArgs),
+        totalItems: getEntityRecordsTotalItems(...selectorArgs) || 0,
+        totalPages: getEntityRecordsTotalPages(...selectorArgs) || 1,
+      };
+    },
+    [queryArgs]
   );
 
   return {
     hasResolved,
     records: records || [],
-    totalItems: records?.length || 0,
-    totalPages: Math.ceil((records?.length || 0) / (view?.perPage || 10)),
+    totalItems,
+    totalPages,
   };
 }
