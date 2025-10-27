@@ -70,7 +70,7 @@ add_action('abilities_api_init', function () {
         },
         'permission_callback' => function () {
             // Allow any authenticated user
-            return current_user_can( 'edit_posts' );
+            return current_user_can( 'manage_woocommerce' );
         }
     ]);
 
@@ -133,7 +133,7 @@ add_action('abilities_api_init', function () {
         },
         'permission_callback' => function () {
             // Allow any authenticated user
-            return current_user_can( 'edit_posts' );
+            return current_user_can( 'manage_woocommerce' );
         }
     ]);
 
@@ -196,7 +196,7 @@ add_action('abilities_api_init', function () {
         },
         'permission_callback' => function () {
             // Allow any authenticated user
-            return current_user_can( 'edit_posts' );
+            return current_user_can( 'manage_woocommerce' );
         }
     ]);
 
@@ -325,7 +325,7 @@ add_action('abilities_api_init', function () {
         },
         'permission_callback' => function () {
             // Allow any authenticated user who can edit posts
-            return current_user_can( 'edit_posts' );
+            return current_user_can( 'manage_woocommerce' );
         }
     ]);
 });

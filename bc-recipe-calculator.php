@@ -6,6 +6,7 @@
  * Author: BC Recipe Calculator
  * License: GPL v2 or later
  * Text Domain: bc-recipe-calculator
+ * Requires Plugins: woocommerce
  *
  * @package BCRecipeCalculator
  */
