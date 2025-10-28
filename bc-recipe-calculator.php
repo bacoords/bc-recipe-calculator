@@ -30,3 +30,4 @@ define( 'BC_RECIPE_CALCULATOR_ASSETS_URL', BC_RECIPE_CALCULATOR_URL . 'assets/' 
 
 require_once 'includes/cpts.php';
 require_once 'includes/abilities.php';
+require_once 'includes/woocommerce-integration.php';

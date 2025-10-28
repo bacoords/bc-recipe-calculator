@@ -1,0 +1,250 @@
+/**
+ * WooCommerce Integration Styles
+ * Styles for the Recipes tab in WooCommerce product edit screen
+ */
+
+/* Recipe Search Wrapper */
+.bc-recipe-search-wrapper {
+	max-width: 100%;
+}
+
+.bc-recipe-search-wrapper h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.bc-recipe-search-wrapper .description {
+	color: #646970;
+	font-size: 13px;
+	margin-bottom: 15px;
+}
+
+/* Search Field */
+.bc-recipe-search-field {
+	position: relative;
+}
+
+.bc-recipe-search-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 5px;
+}
+
+.bc-recipe-search-input {
+	padding: 6px 10px;
+	font-size: 14px;
+	line-height: 1.5;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	box-shadow: 0 0 0 transparent;
+	transition: border-color 0.2s ease;
+}
+
+.bc-recipe-search-input:focus {
+	border-color: #2271b1;
+	outline: 2px solid transparent;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Results Container */
+.bc-recipe-results {
+	animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.bc-recipe-list table {
+	margin-top: 10px;
+}
+
+.bc-recipe-list table th {
+	font-weight: 600;
+	background-color: #f6f7f7;
+}
+
+.bc-recipe-list table td {
+	vertical-align: middle;
+}
+
+.bc-view-recipe {
+	white-space: nowrap;
+}
+
+/* No Results / Error Messages */
+.bc-no-results,
+.bc-error {
+	padding: 12px;
+	background-color: #f0f0f1;
+	border-left: 4px solid #72aee6;
+	margin: 10px 0;
+	color: #1d2327;
+}
+
+.bc-error {
+	background-color: #fcf0f1;
+	border-left-color: #d63638;
+	color: #b32d2e;
+}
+
+/* Recipe Detail Card */
+.bc-recipe-detail-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px;
+	margin-top: 15px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.bc-recipe-detail-card h4 {
+	margin: 0 0 15px 0;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #2271b1;
+	color: #1d2327;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.bc-recipe-detail-card h5 {
+	margin: 15px 0 10px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Recipe Summary */
+.bc-recipe-summary {
+	margin-bottom: 20px;
+}
+
+.bc-cost-summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin-bottom: 15px;
+}
+
+.bc-cost-item {
+	display: flex;
+	flex-direction: column;
+	padding: 12px;
+	background-color: #f6f7f7;
+	border-radius: 4px;
+	border: 1px solid #dcdcde;
+}
+
+.bc-cost-item.bc-cost-highlight {
+	background-color: #e7f5fe;
+	border-color: #2271b1;
+}
+
+.bc-cost-label {
+	font-size: 12px;
+	color: #646970;
+	margin-bottom: 4px;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.bc-cost-value {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.bc-cost-highlight .bc-cost-value {
+	color: #135e96;
+}
+
+/* Ingredients Table */
+.bc-recipe-ingredients table {
+	margin-top: 10px;
+}
+
+.bc-recipe-ingredients table th {
+	background-color: #f6f7f7;
+	font-weight: 600;
+	text-align: left;
+	padding: 8px 10px;
+}
+
+.bc-recipe-ingredients table td {
+	padding: 8px 10px;
+	vertical-align: middle;
+}
+
+.bc-recipe-ingredients table tbody tr:nth-child(odd) {
+	background-color: #f9f9f9;
+}
+
+.bc-recipe-ingredients table tbody tr:hover {
+	background-color: #f0f0f1;
+}
+
+/* Close Button */
+.bc-close-details {
+	margin-top: 15px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 782px) {
+	.bc-cost-summary {
+		grid-template-columns: 1fr;
+	}
+
+	.bc-recipe-search-input {
+		max-width: 100% !important;
+	}
+
+	.bc-recipe-list table {
+		font-size: 13px;
+	}
+}
+
+/* Loading State */
+.bc-recipe-search-field .spinner.is-active {
+	display: inline-block;
+	visibility: visible;
+}
+
+/* Table Improvements */
+.bc-recipe-list table,
+.bc-recipe-ingredients table {
+	border-collapse: separate;
+	border-spacing: 0;
+	overflow: hidden;
+}
+
+.bc-recipe-list table th:first-child,
+.bc-recipe-ingredients table th:first-child {
+	border-top-left-radius: 4px;
+}
+
+.bc-recipe-list table th:last-child,
+.bc-recipe-ingredients table th:last-child {
+	border-top-right-radius: 4px;
+}
