@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7
+
+- Adds metabox on single product screens for searching recipe costs
+
 ## 1.0.6
 
 - Adds tools to Woo MCP integration for reading/creating recipes and ingredients
