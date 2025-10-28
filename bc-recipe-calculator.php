@@ -25,8 +25,6 @@ define( 'BC_RECIPE_CALCULATOR_DIR', plugin_dir_path( BC_RECIPE_CALCULATOR_FILE )
 define( 'BC_RECIPE_CALCULATOR_URL', plugin_dir_url( BC_RECIPE_CALCULATOR_FILE ) );
 define( 'BC_RECIPE_CALCULATOR_BASENAME', plugin_basename( BC_RECIPE_CALCULATOR_FILE ) );
 define( 'BC_RECIPE_CALCULATOR_INCLUDES_DIR', BC_RECIPE_CALCULATOR_DIR . 'includes/' );
-define( 'BC_RECIPE_CALCULATOR_ASSETS_DIR', BC_RECIPE_CALCULATOR_DIR . 'assets/' );
-define( 'BC_RECIPE_CALCULATOR_ASSETS_URL', BC_RECIPE_CALCULATOR_URL . 'assets/' );
 
 require_once 'includes/cpts.php';
 require_once 'includes/abilities.php';

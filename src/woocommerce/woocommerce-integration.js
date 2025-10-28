@@ -3,6 +3,9 @@
  * Handles recipe search and display in WooCommerce product edit screen
  */
 
+import './woocommerce-integration.scss';
+import $ from 'jquery';
+
 (function($) {
 	'use strict';
 

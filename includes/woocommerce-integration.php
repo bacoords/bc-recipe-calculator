@@ -136,21 +136,24 @@ class WooCommerceIntegration {
 			return;
 		}
 
+		// Get asset file for dependency and version management.
+		$asset_file = include BC_RECIPE_CALCULATOR_DIR . 'build/woocommerce-integration.asset.php';
+
 		// Enqueue the script.
 		wp_enqueue_script(
 			'bc-recipe-woocommerce',
-			BC_RECIPE_CALCULATOR_URL . 'assets/js/woocommerce-integration.js',
-			array( 'jquery' ),
-			BC_RECIPE_CALCULATOR_VERSION,
+			BC_RECIPE_CALCULATOR_URL . 'build/woocommerce-integration.js',
+			$asset_file['dependencies'],
+			$asset_file['version'],
 			true
 		);
 
 		// Enqueue the styles.
 		wp_enqueue_style(
 			'bc-recipe-woocommerce',
-			BC_RECIPE_CALCULATOR_URL . 'assets/css/woocommerce-integration.css',
+			BC_RECIPE_CALCULATOR_URL . 'build/woocommerce-integration.css',
 			array(),
-			BC_RECIPE_CALCULATOR_VERSION
+			$asset_file['version']
 		);
 
 		// Localize script with REST API settings.
